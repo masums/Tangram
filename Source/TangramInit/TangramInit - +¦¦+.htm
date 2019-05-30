@@ -1,0 +1,31 @@
+<html>
+
+<script>
+    function WndPage_OnPageLoaded(SourceWindow, URL) {
+        if (SourceWindow == window)
+        {
+            alert(1);
+        }
+    }
+</script>
+
+<body>
+    <xml id="newtangramdocument">
+        <tangramdoc>
+            <window>
+                <node name="TangramToolPane1" id="TangramTabCtrl" cnnid="TangramTabbedWnd.TabbedComponent.1" style="19" activepage="0">
+                    <node id="splitter" name="splitter" caption="Tangram Designer" style="0" rows="2" cols="1" height="550,250," width="500," middlecolor="RGB(255,224,192)">
+                        <node name="TangramTemplate" id="TangramTabCtrl" cnnid="TangramTabbedWnd.TabbedComponent.1" style="18">
+                            <node name="TangramList" id="TangramListView" style="0" caption="Create New Document" />
+                        </node>
+                        <node name="TangramToolPane2" id="TangramTabCtrl" cnnid="TangramTabbedWnd.TabbedComponent.1" style="18">
+                            <node name="DocumentTemplate" id="TabCtrl" caption="DocumentTemplate" cnnid="" relationnode="TangramList" />
+                        </node>
+                    </node>
+                    <node name="TangramList2" id="TangramListView" style="1" caption="Create New MainFrame" />
+                </node>
+            </window>
+        </tangramdoc>
+    </xml>
+</body>
+</html>

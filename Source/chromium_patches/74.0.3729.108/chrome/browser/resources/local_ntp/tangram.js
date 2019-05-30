@@ -1,0 +1,1 @@
+tangram.extend("default", "hostntpxml", "chrome_proxy:tangram");

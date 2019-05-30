@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{75A11D06-CF14-4181-BE58-65DF9DAE1D20}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>TangramWinFormLib</RootNamespace>
+    <AssemblyName>TangramWinFormLib</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\..\..\test\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="TangramMdiChildForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TangramMdiChildForm.Designer.cs">
+      <DependentUpon>TangramMdiChildForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TangramMdiChildForm1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TangramMdiChildForm1.Designer.cs">
+      <DependentUpon>TangramMdiChildForm1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TangramMdiChildForm2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TangramMdiChildForm2.Designer.cs">
+      <DependentUpon>TangramMdiChildForm2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TangramMdiChildForm3.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TangramMdiChildForm3.Designer.cs">
+      <DependentUpon>TangramMdiChildForm3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TangramMDIForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TangramMDIForm.Designer.cs">
+      <DependentUpon>TangramMDIForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TangramMDIForm2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TangramMDIForm2.Designer.cs">
+      <DependentUpon>TangramMDIForm2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TangramWinForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TangramWinForm.Designer.cs">
+      <DependentUpon>TangramWinForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TangramUserCtrl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TangramUserCtrl.Designer.cs">
+      <DependentUpon>TangramUserCtrl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TangramMDIForm.resx">
+      <DependentUpon>TangramMDIForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TangramMDIForm2.resx">
+      <DependentUpon>TangramMDIForm2.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

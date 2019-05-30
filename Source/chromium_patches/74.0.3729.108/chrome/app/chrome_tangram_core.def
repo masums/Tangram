@@ -1,0 +1,6 @@
+; TangramChromeCore.def : Declares the module parameters.
+
+LIBRARY      "TangramChromeCore.DLL"
+
+EXPORTS
+	InitApp					PRIVATE

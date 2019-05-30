@@ -1,0 +1,109 @@
+<html>
+<style>
+input{
+	padding-left: 10px;
+	padding-right: 10px;
+}
+</style>
+<script language="javascript" type="text/javascript">
+// <!CDATA[
+        function Tangram_OnPageLoaded(/**/SourceWindow, URL, ExternalObj) {
+            if (SourceWindow == window) {
+                alert(URL);
+            }
+        }
+
+        function WndPage_OnPageLoaded(/**/Sender, URL) {
+        }
+
+        function TryEclipse() {
+            var remoteApp = Tangram.RemoteTangram("eclipse.application.1");
+            var addin = Tangram.Extender;
+            if (remoteApp != null)
+            {
+                var xml = addin.DesignRootNode.DocXml;
+                var thisWnd = remoteApp.Extender.ActiveWorkBenchWindow("");
+                thisWnd.ExtendEx(Tangram.NewGUID(), xml);
+            }
+            else {
+                var xml = "TopView|";
+                xml += addin.DesignRootNode.DocXml;
+                var app = Tangram.StartApplication("eclipse.application.1", xml);
+                if(app==null)
+                {
+                }
+            }
+        }
+
+        function TryEclipseView() {
+            var remoteApp = Tangram.RemoteTangram("eclipse.application.1");
+            var addin = Tangram.Extender;
+            if (remoteApp != null) {
+                var xml = addin.DesignRootNode.DocXml;
+                var thisWnd = remoteApp.Extender.ActiveWorkBenchWindow("");
+                if (thisWnd != null)
+                {
+                    thisWnd.ExtendEx(Tangram.NewGUID(), xml);
+                    thisWnd.Active();
+                }
+            }
+            else {
+                var xml = "EclipseView|";
+                xml += addin.DesignRootNode.DocXml;
+                var app = Tangram.StartApplication("eclipse.application.1", xml);
+                if (app == null) {
+                }
+            }
+        }
+
+        function TryWinForm() {
+            var xml = Tangram.Extender.DesignRootNode.DocXml;
+            var toolnode = Tangram.AppExtender("designerpage").Frame(0).VisibleNode;//RootNodes(0);
+            var nodes = toolnode.GetNodeByName("winform");
+            nodes(0).XObject.ShowForm();
+            //Tangram.StartApplication("TangramApp.AppObject.1", "");
+            //var remoteApp = Tangram.RemoteTangram("TangramApp.AppObject.1");
+            //if (remoteApp != null) {
+            //    var thisNode = remoteApp.AppExtender("Application").Extend(Tangram.NewGUID(), xml);
+            //}
+        }
+
+        function TryMFCApp() {
+            Tangram.StartApplication("TangramApp.AppObject.1", "");
+            var xml = Tangram.Extender.DesignRootNode.DocXml;
+            var remoteApp = Tangram.RemoteTangram("TangramApp.AppObject.1");
+            if (remoteApp != null) {
+                var thisNode = remoteApp.AppExtender("Application").Extend(Tangram.NewGUID(), xml);
+            }
+        }
+        function Trytest() {
+            //alert(Tangram.AppExtender("DTE");
+            Tangram.AppExtender("DTE").Documents.Add("{7f8286c6-672d-484a-8c4b-1f257d7353b1}");
+        }
+		
+		function ShowDescription(text){
+			document.getElementById('description').innerText = text;
+		}
+		
+		function HideDescription(){
+			document.getElementById('description').innerText = "";
+		}
+		
+        // ]]>
+</script>
+<body>
+    <p>HostView is a Cool feature in Tangram</p>
+    <div>
+        <input id="Button1" type="button" value="Use Designing XmlDoc in.NETForm" onclick="return TryWinForm()"
+			onmouseover="ShowDescription('NETForm show here')" onmouseout="HideDescription()" />
+        <input id="Button4" type="button" value="Use Designing XmlDoc in MFCApp" onclick="return TryMFCApp()" 
+			onmouseover="ShowDescription('MFCApp show here')" onmouseout="HideDescription()" />
+        <input id="Button2" type="button" value="Use Designing XmlDoc in Eclipse" onclick="return TryEclipse()" 
+			onmouseover="ShowDescription('Eclipse show here')" onmouseout="HideDescription()" />
+        <input id="Button3" type="button" value="Use Designing XmlDoc in EclipseView" onclick="return TryEclipseView()" 
+			onmouseover="ShowDescription('EclipseView show here')" onmouseout="HideDescription()" />
+   </div>
+   <p id="description">
+   </p>
+</body>
+</html>

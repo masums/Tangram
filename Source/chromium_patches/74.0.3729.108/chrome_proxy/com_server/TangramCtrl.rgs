@@ -1,0 +1,32 @@
+HKCR
+{
+	ChromeCtrl.Ctrl.1 = s 'ChromeCtrl Class'
+	{
+		CLSID = s '{19631222-1992-0612-1965-060120190403}'
+	}
+	ChromeCtrl.Ctrl = s 'ChromeCtrl Class'
+	{		
+		CurVer = s 'ChromeCtrl.Ctrl.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {19631222-1992-0612-1965-060120190403} = s 'ChromeCtrl Class'
+		{
+			ProgID = s 'ChromeCtrl.Ctrl.1'
+			VersionIndependentProgID = s 'ChromeCtrl.Ctrl'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			ForceRemove Control
+			ForceRemove 'ToolboxBitmap32' = s '%MODULE%, 214'
+			MiscStatus = s '0'
+			{
+			    '1' = s '%OLEMISC%'
+			}
+			TypeLib = s '{19631222-1992-0612-1965-060120180823}'
+			Version = s '1.0'
+		}
+	}
+}

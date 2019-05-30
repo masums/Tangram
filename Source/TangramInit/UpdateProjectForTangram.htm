@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>Untitled Page</title>
+
+    <script language="javascript" type="text/javascript">
+// <!CDATA[
+        var HostNode = null;
+        function WndPage_OnPageLoaded(SourceWindow, URL) {
+            if (SourceWindow == window) 
+            {
+            }
+        }
+        function WndPage_OnTangramEvent(eventObj) {
+            var frame = eventObj.Object(0);
+            var prj = eventObj.Object(1);
+            Button3.value = "Update Project: \"" + prj.Name + "\" for Support Tangram Integration";
+        }
+        function Button3_onclick() {
+            Tangram.Extender.TangramCLRProject(Tangram.Extender.CurrentSelectedPrj) = true;
+            var frame = WndPage.Frame("CLRFrame");
+            if (frame != null)
+            {
+                frame.Extend("default", "< Tangram ><window><node name='node' id='hostview' /></window></Tangram >");
+            }
+        }
+
+// ]]>
+    </script>
+</head>
+<body background="images/TangramBK.png">
+
+    <p>
+        <input id="Button3" type="button" value="Update Current Project to Support Tangram" onclick="return Button3_onclick()" /></p>
+
+</body>
+</html>
