@@ -156,6 +156,12 @@
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <PostBuildEvent />
+    <PostBuildEvent>
+      <Command>if not exist "$(windir)\Microsoft.NET\assembly\GAC_32\TangramCLR\v4.0_1.0.1992.1963__1bcc94f26a4807a7\" (
+  mkdir "$(windir)\Microsoft.NET\assembly\GAC_32\TangramCLR\v4.0_1.0.1992.1963__1bcc94f26a4807a7"
+)
+copy $(OutDir)$(TargetName)$(TargetExt) $(windir)\Microsoft.NET\assembly\GAC_32\TangramCLR\v4.0_1.0.1992.1963__1bcc94f26a4807a7\$(TargetName)$(TargetExt)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -200,6 +206,12 @@
       <OutputFile>$(SolutionDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent />
+    <PostBuildEvent>
+      <Command>if not exist "$(windir)\Microsoft.NET\assembly\GAC_64\TangramCLR\v4.0_1.0.1992.1963__1bcc94f26a4807a7\" (
+  mkdir "$(windir)\Microsoft.NET\assembly\GAC_64\TangramCLR\v4.0_1.0.1992.1963__1bcc94f26a4807a7"
+)
+copy $(OutDir)$(TargetName)$(TargetExt) $(windir)\Microsoft.NET\assembly\GAC_64\TangramCLR\v4.0_1.0.1992.1963__1bcc94f26a4807a7\$(TargetName)$(TargetExt)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -248,6 +260,12 @@
       <OutputFile>$(SolutionDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent />
+    <PostBuildEvent>
+      <Command>if not exist "$(windir)\Microsoft.NET\assembly\GAC_32\TangramCLR\v4.0_1.0.1992.1963__1bcc94f26a4807a7\" (
+  mkdir "$(windir)\Microsoft.NET\assembly\GAC_32\TangramCLR\v4.0_1.0.1992.1963__1bcc94f26a4807a7"
+)
+copy $(OutDir)$(TargetName)$(TargetExt) $(windir)\Microsoft.NET\assembly\GAC_32\TangramCLR\v4.0_1.0.1992.1963__1bcc94f26a4807a7\$(TargetName)$(TargetExt)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -297,6 +315,12 @@
       <OutputFile>$(SolutionDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent />
+    <PostBuildEvent>
+      <Command>if not exist "$(windir)\Microsoft.NET\assembly\GAC_64\TangramCLR\v4.0_1.0.1992.1963__1bcc94f26a4807a7\" (
+  mkdir "$(windir)\Microsoft.NET\assembly\GAC_64\TangramCLR\v4.0_1.0.1992.1963__1bcc94f26a4807a7"
+)
+copy $(OutDir)$(TargetName)$(TargetExt) $(windir)\Microsoft.NET\assembly\GAC_64\TangramCLR\v4.0_1.0.1992.1963__1bcc94f26a4807a7\$(TargetName)$(TargetExt)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
