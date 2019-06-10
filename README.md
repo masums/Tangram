@@ -1,5 +1,7 @@
 # Tangram Cloud-Desktop Application
 
+[![Gitter](https://badges.gitter.im/TangramDev/Lobby.svg)](https://gitter.im/TangramDev/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 Traditional desktop development has accumulated rich assets for so many years. In the face of the increasingly powerful cloud infrastructure, desktop development urgently needs a new software construction model to better utilize the advantages of the cloud. Tangram helps developers build a new Cloud-Desktop application. It deploys desktop components to the cloud and organizes and presents them using HTML.
 
 ## How to work?
@@ -130,7 +132,7 @@ TODO
 
 ## Discussion
 
-- Discuss Tangram on our Gitter
+- Discuss Tangram on our [Gitter](https://gitter.im/TangramDev/Lobby)
 - Visit our forum - https://www.tangram.dev/forum
 
 ## Contributing
