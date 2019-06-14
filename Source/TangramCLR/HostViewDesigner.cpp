@@ -47,37 +47,7 @@ namespace TangramDesigner
 	}
 
 	System::Void HostViewDesigner::btnPrevatChrome_Click(System::Object^  sender, System::EventArgs^  e) {
-		//CComPtr<ITangram> pTangram;
-		//theApp.m_pTangram->get_RemoteTangram(CComBSTR("chromeplus.tangram"), &pTangram);
-		////pTangram.CoCreateInstance(L"chromeplus.tangram");
-		//if (pTangram)
-		//{
-		//	CComPtr<IChromeWebBrowser> pBrowser;
-		//	pTangram->get_ActiveChromeBrowserWnd(&pBrowser);
-		//	if (pBrowser)
-		//	{
-
-		//	}
-		//}
-		ITangramExtender* pExtender = nullptr;
-		theApp.m_pTangram->get_Extender(&pExtender);
-		if (pExtender)
-		{
-			CComQIPtr<IVSExtender> pVSExtender(pExtender);
-			if (pVSExtender)
-				theApp.m_pVSExtender = pVSExtender.Detach();
-		}
-		if (theApp.m_pVSExtender)
-		{
-			IWndNode* pNode = nullptr;
-			theApp.m_pVSExtender->get_DesignRootNode(&pNode);
-			CComBSTR bstrXml;
-			CComBSTR bstrKey;
-			pNode->get_DocXml(&bstrXml);
-			theApp.m_pTangram->NewGUID(&bstrKey);
-			ChromeWebBrowser^ browser = TangramCLR::Tangram::ActiveBrowser();
-			if (browser)
-				browser->OpenURL(L"http://www.sina.com.cn", Disposition::NEW_POPUP, BSTR2STRING(bstrKey), BSTR2STRING(bstrXml));
-		}
+		if (theApp.m_pTangramProxyBase && theApp.m_pTangramProxyBase->m_pCreatorImpl)
+			theApp.m_pTangramProxyBase->m_pCreatorImpl->CreateBrowser(NULL, _T("https://tangramdev.github.io/test/newtangrampage.html|"));
 	}
 }

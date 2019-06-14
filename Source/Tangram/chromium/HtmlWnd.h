@@ -35,18 +35,24 @@ namespace ChromePlus
 		CHtmlWnd();
 		~CHtmlWnd() override;
 
-		BOOL			m_bDevToolWnd;
-		HWND			m_hExtendWnd;
-		HWND			m_hChildWnd;
-		HWND			m_hHostWnd;
-		CString			m_strURL;
-		CString			m_strCurKey;
-		CString			m_strCurXml;
-		CWndFrame*		m_pFrame;
+		BOOL					m_bDevToolWnd;
+		HWND					m_hExtendWnd;
+		HWND					m_hChildWnd;
+		HWND					m_hHostWnd;
+		CString					m_strURL;
+		CString					m_strCurKey;
+		CString					m_strCurXml;
+		CString					m_strFormXml;
+		CWndFrame*				m_pFrame;
 
-		CHtmlWnd*		m_pWebWnd;
-		CHtmlWnd*		m_pDevToolWnd;
-
+		CHtmlWnd*				m_pWebWnd;
+		CHtmlWnd*				m_pDevToolWnd;
+		map<CString, CString>	m_mapFormsInfo;
+		map<CString, CString>	m_mapeclipsesInfo;
+		map<CString, CString>	m_mapUserControlsInfo;
+		map<CString, CString>	m_mapAtlMFCsInfo;
+		map<CString, CString>	m_mapStartupsInfo;
+		map<CString, CMDIChildFormInfo*>	m_mapChildFormsInfo;
 		BEGIN_MSG_MAP(CHtmlWnd)
 			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 			MESSAGE_HANDLER(WM_TANGRAMMSG, OnTangramMsg)

@@ -150,6 +150,14 @@ namespace TangramCommon
 		IDispatch*		m_pCtrlDisp;
 	}CtrlInfo;
 
+	class CMDIChildFormInfo
+	{
+	public:
+		CMDIChildFormInfo() {}
+		~CMDIChildFormInfo() {}
+		map<CString, CString>	m_mapFormsInfo;
+	};
+
 	class CTangramProxyBase : public ChromePlus::CChromeProcessProxy
 	{
 	public:
@@ -157,6 +165,7 @@ namespace TangramCommon
 		{
 			m_bExportComponent = false;
 			m_hMainWnd = nullptr;
+			m_pCurMDIChildFormInfo = nullptr;
 			m_hHostWnd = nullptr;
 			m_hFormNodeWnd = nullptr;
 			m_hTangramWnd = nullptr;
@@ -262,7 +271,7 @@ namespace TangramCommon
 		CStringA					m_strBridgeJavaClass;
 		CString						m_strStartJarPath;
 
-
+		CMDIChildFormInfo*			m_pCurMDIChildFormInfo;
 		CTangramAppProxy*			m_pActiveAppProxy;
 		CTangramAppProxy*			m_pTangramAppProxy;
 		CTangramAppProxy*			m_pTangramCLRAppProxy;
@@ -563,16 +572,18 @@ namespace TangramCommon
 			m_pProxy = NULL;
 			m_strObjTypeName = _T("");
 		};
+
 		CString				m_strObjTypeName;
+		CString				m_strCurrentWinFormTemplate;
 
 		CTangramProxyBase*	m_pProxy;
 		virtual BSTR AttachObjEvent(IDispatch* EventObj, IDispatch* SourceObj, WindowEventType EventType, IDispatch* HTMLWindow) = 0;
 		virtual HRESULT ActiveCLRMethod(BSTR bstrObjID, BSTR bstrMethod, BSTR bstrParam, BSTR bstrData) = 0;
 		virtual HRESULT ActiveCLRMethod(IDispatch* obj, BSTR bstrMethod, BSTR bstrParam, BSTR bstrData) = 0;
-		virtual IDispatch* CreateCLRObj(BSTR bstrObjID) = 0;
+		virtual IDispatch* CreateCLRObj(CString bstrObjID) = 0;
 		virtual HRESULT ProcessCtrlMsg(HWND hCtrl, bool bShiftKey) = 0;
 		virtual BOOL ProcessFormMsg(HWND hFormWnd, LPMSG lpMsg, int nMouseButton) = 0;
-		virtual IDispatch* TangramCreateObject(BSTR bstrObjID, long hParent, IWndNode* pHostNode)=0;
+		virtual IDispatch* TangramCreateObject(BSTR bstrObjID, HWND hParent, IWndNode* pHostNode)=0;
 		virtual int IsWinForm(HWND hWnd) = 0;
 		virtual int IsSpecifiedType(IUnknown* pUnknown, BSTR bstrName) = 0;
 		virtual IDispatch* GetCLRControl(IDispatch* CtrlDisp, BSTR bstrNames)=0;

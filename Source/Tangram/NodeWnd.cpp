@@ -601,214 +601,257 @@ LRESULT CNodeWnd::OnTangramMsg(WPARAM wParam, LPARAM lParam)
 			m_pWndNode->m_strName = strName;
 			return 0;
 		}
-		CString strCnnID = (LPCTSTR)lParam;
-		if (strCnnID.Find(_T(",")) != -1 && g_pTangram->m_pCLRProxy)
+		if (lParam != 20190602)
 		{
-			m_pWndNode->m_pDisp = g_pTangram->m_pCLRProxy->TangramCreateObject(strCnnID.AllocSysString(), (long)m_hWnd, m_pWndNode);
-
-			if (m_pWndNode->m_pDisp)
+			CString strCnnID = (LPCTSTR)lParam;
+			if (strCnnID.Find(_T(",")) != -1 && g_pTangram->m_pCLRProxy)
 			{
-				m_pWndNode->m_pTangramNodeCommonData->m_mapLayoutNodes[m_pWndNode->m_strName] = m_pWndNode;
-				m_pWndNode->m_nViewType = CLRCtrl;
-				if (g_pTangram->m_hFormNodeWnd)
+				m_pWndNode->m_pDisp = g_pTangram->m_pCLRProxy->TangramCreateObject(strCnnID.AllocSysString(), m_hWnd, m_pWndNode);
+
+				if (m_pWndNode->m_pDisp)
 				{
-					m_hFormWnd = g_pTangram->m_hFormNodeWnd;
-					RECT rc;
-					::GetClientRect(m_hWnd, &rc);
-					::SetWindowPos(m_hFormWnd, HWND_BOTTOM, 0, 0, rc.right, rc.bottom, SWP_NOACTIVATE | SWP_NOREDRAW);
-					g_pTangram->m_hFormNodeWnd = nullptr;
-					return 0;
+					m_pWndNode->m_pTangramNodeCommonData->m_mapLayoutNodes[m_pWndNode->m_strName] = m_pWndNode;
+					m_pWndNode->m_nViewType = CLRCtrl;
+					if (g_pTangram->m_hFormNodeWnd)
+					{
+						m_hFormWnd = g_pTangram->m_hFormNodeWnd;
+						RECT rc;
+						::GetClientRect(m_hWnd, &rc);
+						::SetWindowPos(m_hFormWnd, HWND_BOTTOM, 0, 0, rc.right, rc.bottom, SWP_NOACTIVATE | SWP_NOREDRAW);
+						g_pTangram->m_hFormNodeWnd = nullptr;
+						return 0;
+					}
+					CAxWindow m_Wnd;
+					m_Wnd.Attach(m_hWnd);
+					CComPtr<IUnknown> pUnk;
+					m_Wnd.AttachControl(m_pWndNode->m_pDisp, &pUnk);
+					CComQIPtr<IOleInPlaceActiveObject> pIOleInPlaceActiveObject(m_pWndNode->m_pDisp);
+					if (pIOleInPlaceActiveObject)
+						m_pOleInPlaceActiveObject = pIOleInPlaceActiveObject.Detach();
+					m_Wnd.Detach();
+					if (m_mapDockCtrl.size())
+					{
+						HWND hPage = m_pWndNode->m_pTangramNodeCommonData->m_pPage->m_hWnd;
+						::SendMessage(hPage, WM_TANGRAMMSG, (WPARAM)this, 1963);
+					}
 				}
-				CAxWindow m_Wnd;
-				m_Wnd.Attach(m_hWnd);
-				CComPtr<IUnknown> pUnk;
-				m_Wnd.AttachControl(m_pWndNode->m_pDisp, &pUnk);
-				CComQIPtr<IOleInPlaceActiveObject> pIOleInPlaceActiveObject(m_pWndNode->m_pDisp);
-				if (pIOleInPlaceActiveObject)
-					m_pOleInPlaceActiveObject = pIOleInPlaceActiveObject.Detach();
-				m_Wnd.Detach();
-				if (m_mapDockCtrl.size())
+				else
 				{
-					HWND hPage = m_pWndNode->m_pTangramNodeCommonData->m_pPage->m_hWnd;
-					::SendMessage(hPage, WM_TANGRAMMSG, (WPARAM)this, 1963);
+					m_bCreateExternal = true;
 				}
 			}
 			else
 			{
-				m_bCreateExternal = true;
-			}
-		}
-		else
-		{
-			CString strName = strCnnID;
-			int _nPos = strName.Find(_T("."));
-			if (_nPos != -1)
-				strName = strName.Mid(_nPos + 1);
-			_nPos = strName.ReverseFind('.');
-			if (_nPos != -1)
-				strName = strName.Left(_nPos);
-			CWndNode * pNode = m_pWndNode->m_pRootObj;
-			CWndNode * pParent = m_pWndNode->m_pParentObj;
-			if (pParent)
-			{
-				strName = pParent->m_strName + _T("_") + strName;
-			}
-			auto it = pNode->m_pTangramNodeCommonData->m_mapAxNodes.find(strName);
-			if (it != pNode->m_pTangramNodeCommonData->m_mapAxNodes.end())
-			{
-				BOOL bGetNew = false;
-				int nIndex = 0;
-				while (bGetNew == false)
+				CString strName = strCnnID;
+				int _nPos = strName.Find(_T("."));
+				if (_nPos != -1)
+					strName = strName.Mid(_nPos + 1);
+				_nPos = strName.ReverseFind('.');
+				if (_nPos != -1)
+					strName = strName.Left(_nPos);
+				CWndNode * pNode = m_pWndNode->m_pRootObj;
+				CWndNode * pParent = m_pWndNode->m_pParentObj;
+				if (pParent)
 				{
-					CString strNewName = _T("");
-					strNewName.Format(_T("%s%d"), strName, nIndex);
-					it = pNode->m_pTangramNodeCommonData->m_mapAxNodes.find(strNewName);
-					if (it == pNode->m_pTangramNodeCommonData->m_mapAxNodes.end())
-					{
-						pNode->m_pTangramNodeCommonData->m_mapAxNodes[strNewName] = m_pWndNode;
-						strName = strNewName;
-						bGetNew = true;
-						break;
-					}
-					nIndex++;
+					strName = pParent->m_strName + _T("_") + strName;
 				}
-			}
-			else
-			{
-				pNode->m_pTangramNodeCommonData->m_mapAxNodes[strName] = m_pWndNode;
-			}
-			m_pWndNode->put_Attribute(CComBSTR(L"name"), strName.AllocSysString());
-			m_pWndNode->m_strName = strName;
-			BOOL bWebCtrl = false;
-			CString strURL = _T("");
-			strCnnID.MakeLower();
-			auto nPos = strCnnID.Find(_T("http:"));
-			if (nPos == -1)
-				nPos = strCnnID.Find(_T("https:"));
-			if (m_pWndNode->m_pTangramNodeCommonData->m_pFrame)
-			{
-				CComBSTR bstr;
-				m_pWndNode->get_Attribute(CComBSTR("InitInfo"), &bstr);
-				CString str = _T("");
-				str += bstr;
-				if (str != _T("") && m_pWndNode->m_pTangramNodeCommonData->m_pPage)
+				auto it = pNode->m_pTangramNodeCommonData->m_mapAxNodes.find(strName);
+				if (it != pNode->m_pTangramNodeCommonData->m_mapAxNodes.end())
 				{
-					LRESULT hr = ::SendMessage(m_pWndNode->m_pTangramNodeCommonData->m_pPage->m_hWnd, WM_GETNODEINFO, (WPARAM)OLE2T(bstr), (LPARAM)::GetParent(m_hWnd));
-					if (hr)
+					BOOL bGetNew = false;
+					int nIndex = 0;
+					while (bGetNew == false)
 					{
-						CString strInfo = _T("");
-						CWindow m_wnd;
-						m_wnd.Attach(::GetParent(m_hWnd));
-						m_wnd.GetWindowText(strInfo);
-						strCnnID += strInfo;
-						m_wnd.Detach();
+						CString strNewName = _T("");
+						strNewName.Format(_T("%s%d"), strName, nIndex);
+						it = pNode->m_pTangramNodeCommonData->m_mapAxNodes.find(strNewName);
+						if (it == pNode->m_pTangramNodeCommonData->m_mapAxNodes.end())
+						{
+							pNode->m_pTangramNodeCommonData->m_mapAxNodes[strNewName] = m_pWndNode;
+							strName = strNewName;
+							bGetNew = true;
+							break;
+						}
+						nIndex++;
 					}
 				}
-			}
-
-			if (strCnnID.Find(_T("http://")) != -1 || strCnnID.Find(_T("https://")) != -1)
-			{
-				bWebCtrl = true;
-				strURL = strCnnID;
-				strCnnID = _T("shell.explorer.2");
-			}
-
-			if (strCnnID.Find(_T("res://")) != -1 || ::PathFileExists(strCnnID))
-			{
-				bWebCtrl = true;
-				strURL = strCnnID;
-				strCnnID = _T("shell.explorer.2");
-				if (strCnnID.Find(_T("res://")) != -1)
+				else
 				{
-					CString strTemp = strURL;
-					strTemp.Replace(_T("res://"), _T(""));
-					int nPos = strTemp.ReverseFind('/');
-					CString strTemp2 = strTemp.Mid(nPos);
-					strTemp = strTemp.Left(nPos);
-					if (::PathFileExists(strTemp) == false)
+					pNode->m_pTangramNodeCommonData->m_mapAxNodes[strName] = m_pWndNode;
+				}
+				m_pWndNode->put_Attribute(CComBSTR(L"name"), strName.AllocSysString());
+				m_pWndNode->m_strName = strName;
+				BOOL bWebCtrl = false;
+				CString strURL = _T("");
+				strCnnID.MakeLower();
+				auto nPos = strCnnID.Find(_T("http:"));
+				if (nPos == -1)
+					nPos = strCnnID.Find(_T("https:"));
+				if (m_pWndNode->m_pTangramNodeCommonData->m_pFrame)
+				{
+					CComBSTR bstr;
+					m_pWndNode->get_Attribute(CComBSTR("InitInfo"), &bstr);
+					CString str = _T("");
+					str += bstr;
+					if (str != _T("") && m_pWndNode->m_pTangramNodeCommonData->m_pPage)
 					{
-						strTemp = g_pTangram->m_strAppPath + strTemp;
+						LRESULT hr = ::SendMessage(m_pWndNode->m_pTangramNodeCommonData->m_pPage->m_hWnd, WM_GETNODEINFO, (WPARAM)OLE2T(bstr), (LPARAM)::GetParent(m_hWnd));
+						if (hr)
+						{
+							CString strInfo = _T("");
+							CWindow m_wnd;
+							m_wnd.Attach(::GetParent(m_hWnd));
+							m_wnd.GetWindowText(strInfo);
+							strCnnID += strInfo;
+							m_wnd.Detach();
+						}
+					}
+				}
+
+				if (strCnnID.Find(_T("http://")) != -1 || strCnnID.Find(_T("https://")) != -1)
+				{
+					bWebCtrl = true;
+					strURL = strCnnID;
+					strCnnID = _T("shell.explorer.2");
+				}
+
+				if (strCnnID.Find(_T("res://")) != -1 || ::PathFileExists(strCnnID))
+				{
+					bWebCtrl = true;
+					strURL = strCnnID;
+					strCnnID = _T("shell.explorer.2");
+					if (strCnnID.Find(_T("res://")) != -1)
+					{
+						CString strTemp = strURL;
+						strTemp.Replace(_T("res://"), _T(""));
+						int nPos = strTemp.ReverseFind('/');
+						CString strTemp2 = strTemp.Mid(nPos);
+						strTemp = strTemp.Left(nPos);
 						if (::PathFileExists(strTemp) == false)
 						{
-							strTemp = g_pTangram->m_strProgramFilePath + _T("Tangram\\") + strTemp;
+							strTemp = g_pTangram->m_strAppPath + strTemp;
 							if (::PathFileExists(strTemp) == false)
 							{
-								strURL = _T("about:blank");
+								strTemp = g_pTangram->m_strProgramFilePath + _T("Tangram\\") + strTemp;
+								if (::PathFileExists(strTemp) == false)
+								{
+									strURL = _T("about:blank");
+								}
+								else
+									strURL = _T("res://") + strTemp + strTemp2;
 							}
 							else
 								strURL = _T("res://") + strTemp + strTemp2;
 						}
-						else
-							strURL = _T("res://") + strTemp + strTemp2;
 					}
 				}
-			}
 
-			if (strCnnID.CompareNoCase(_T("about:blank")) == 0)
-			{
-				bWebCtrl = true;
-				strURL = strCnnID;
-				strCnnID = _T("shell.explorer.2");
-			}
-
-			if (m_pWndNode->m_pDisp == NULL)
-			{
-				CComPtr<IDispatch> pDisp;
-				HRESULT hr = pDisp.CoCreateInstance(CComBSTR(strCnnID));
-				if (hr == S_OK)
-				{
-					m_pWndNode->m_pDisp = pDisp.Detach();
-				}
-			}
-			if (m_pWndNode->m_pDisp)
-			{
-				m_pWndNode->m_pTangramNodeCommonData->m_mapLayoutNodes[m_pWndNode->m_strName] = m_pWndNode;
-				m_pWndNode->m_nViewType = ActiveX;
-				CAxWindow m_Wnd;
-				m_Wnd.Attach(m_hWnd);
-				CComPtr<IUnknown> pUnk;
-				m_Wnd.AttachControl(m_pWndNode->m_pDisp, &pUnk);
-				CComQIPtr<IWebBrowser2> pWebDisp(m_pWndNode->m_pDisp);
-				if (pWebDisp)
+				if (strCnnID.CompareNoCase(_T("about:blank")) == 0)
 				{
 					bWebCtrl = true;
-					m_pWndNode->m_strURL = strURL;
-					if (m_pWndNode->m_strURL == _T(""))
-						m_pWndNode->m_strURL = strCnnID;
-					if (m_pWndNode->m_pTangramNodeCommonData->m_pFrame)
-					{
-						if (m_pWndNode->m_pTangramNodeCommonData->m_pPage)
-							m_pWndNode->m_pTangramNodeCommonData->m_pPage->m_nWebViewCount++;
+					strURL = strCnnID;
+					strCnnID = _T("shell.explorer.2");
+				}
 
-						m_pWndNode->m_pTangramNodeWBEvent = new CWndNodeWBEvent(m_pWndNode);
-					}
-					CComPtr<IAxWinAmbientDispatch> spHost;
-					LRESULT hr = m_Wnd.QueryHost(&spHost);
-					if (SUCCEEDED(hr))
+				if (m_pWndNode->m_pDisp == NULL)
+				{
+					CComPtr<IDispatch> pDisp;
+					HRESULT hr = pDisp.CoCreateInstance(CComBSTR(strCnnID));
+					if (hr == S_OK)
 					{
-						CComBSTR bstr;
-						m_pWndNode->get_Attribute(CComBSTR("scrollbar"), &bstr);
-						CString str = OLE2T(bstr);
-						if (str == _T("1"))
-							spHost->put_DocHostFlags(DOCHOSTUIFLAG_NO3DBORDER | DOCHOSTUIFLAG_ENABLE_FORMS_AUTOCOMPLETE | DOCHOSTUIFLAG_THEME);//DOCHOSTUIFLAG_DIALOG|
-						else
-							spHost->put_DocHostFlags(/*DOCHOSTUIFLAG_DIALOG|*/DOCHOSTUIFLAG_SCROLL_NO | DOCHOSTUIFLAG_NO3DBORDER | DOCHOSTUIFLAG_ENABLE_FORMS_AUTOCOMPLETE | DOCHOSTUIFLAG_THEME);
-
-						if (m_pWndNode->m_strURL != _T(""))
-						{
-							pWebDisp->Navigate2(&CComVariant(m_pWndNode->m_strURL), &CComVariant(navNoReadFromCache | navNoWriteToCache), NULL, NULL, NULL);
-							m_pWndNode->m_bWebInit = true;
-						}
+						m_pWndNode->m_pDisp = pDisp.Detach();
 					}
 				}
-				((CNodeWnd*)m_pWndNode->m_pHostWnd)->m_pWndNode = m_pWndNode;
-				HWND hPage = m_pWndNode->m_pTangramNodeCommonData->m_pPage->m_hWnd;
-				::SendMessage(hPage, WM_TANGRAMMSG, (WPARAM)((CNodeWnd*)m_pWndNode->m_pHostWnd), 1963);
-				CComQIPtr<IOleInPlaceActiveObject> pIOleInPlaceActiveObject(m_pWndNode->m_pDisp);
-				if (pIOleInPlaceActiveObject)
-					m_pOleInPlaceActiveObject = pIOleInPlaceActiveObject.Detach();
-				m_Wnd.Detach();
+				if (m_pWndNode->m_pDisp)
+				{
+					m_pWndNode->m_pTangramNodeCommonData->m_mapLayoutNodes[m_pWndNode->m_strName] = m_pWndNode;
+					m_pWndNode->m_nViewType = ActiveX;
+					CAxWindow m_Wnd;
+					m_Wnd.Attach(m_hWnd);
+					CComPtr<IUnknown> pUnk;
+					m_Wnd.AttachControl(m_pWndNode->m_pDisp, &pUnk);
+					CComQIPtr<IWebBrowser2> pWebDisp(m_pWndNode->m_pDisp);
+					if (pWebDisp)
+					{
+						bWebCtrl = true;
+						m_pWndNode->m_strURL = strURL;
+						if (m_pWndNode->m_strURL == _T(""))
+							m_pWndNode->m_strURL = strCnnID;
+						if (m_pWndNode->m_pTangramNodeCommonData->m_pFrame)
+						{
+							if (m_pWndNode->m_pTangramNodeCommonData->m_pPage)
+								m_pWndNode->m_pTangramNodeCommonData->m_pPage->m_nWebViewCount++;
+
+							m_pWndNode->m_pTangramNodeWBEvent = new CWndNodeWBEvent(m_pWndNode);
+						}
+						CComPtr<IAxWinAmbientDispatch> spHost;
+						LRESULT hr = m_Wnd.QueryHost(&spHost);
+						if (SUCCEEDED(hr))
+						{
+							CComBSTR bstr;
+							m_pWndNode->get_Attribute(CComBSTR("scrollbar"), &bstr);
+							CString str = OLE2T(bstr);
+							if (str == _T("1"))
+								spHost->put_DocHostFlags(DOCHOSTUIFLAG_NO3DBORDER | DOCHOSTUIFLAG_ENABLE_FORMS_AUTOCOMPLETE | DOCHOSTUIFLAG_THEME);//DOCHOSTUIFLAG_DIALOG|
+							else
+								spHost->put_DocHostFlags(/*DOCHOSTUIFLAG_DIALOG|*/DOCHOSTUIFLAG_SCROLL_NO | DOCHOSTUIFLAG_NO3DBORDER | DOCHOSTUIFLAG_ENABLE_FORMS_AUTOCOMPLETE | DOCHOSTUIFLAG_THEME);
+
+							if (m_pWndNode->m_strURL != _T(""))
+							{
+								pWebDisp->Navigate2(&CComVariant(m_pWndNode->m_strURL), &CComVariant(navNoReadFromCache | navNoWriteToCache), NULL, NULL, NULL);
+								m_pWndNode->m_bWebInit = true;
+							}
+						}
+					}
+					((CNodeWnd*)m_pWndNode->m_pHostWnd)->m_pWndNode = m_pWndNode;
+					HWND hPage = m_pWndNode->m_pTangramNodeCommonData->m_pPage->m_hWnd;
+					::SendMessage(hPage, WM_TANGRAMMSG, (WPARAM)((CNodeWnd*)m_pWndNode->m_pHostWnd), 1963);
+					CComQIPtr<IOleInPlaceActiveObject> pIOleInPlaceActiveObject(m_pWndNode->m_pDisp);
+					if (pIOleInPlaceActiveObject)
+						m_pOleInPlaceActiveObject = pIOleInPlaceActiveObject.Detach();
+					m_Wnd.Detach();
+				}
 			}
+		}
+		else
+		{
+			CComBSTR bstrKey("");
+			m_pWndNode->get_Attribute(CComBSTR("uikey"), &bstrKey);
+			ChromePlus::CHtmlWnd* pHtmlWnd = m_pWndNode->GetHtmlWnd();
+			CString strUIKey = OLE2T(bstrKey);
+			auto it = pHtmlWnd->m_mapUserControlsInfo.find(strUIKey);
+			if (it != pHtmlWnd->m_mapUserControlsInfo.end())
+			{
+				g_pTangram->m_pCLRProxy->m_strCurrentWinFormTemplate = it->second;
+			}
+			else
+			{
+				it = pHtmlWnd->m_mapFormsInfo.find(strUIKey);
+				if (it != pHtmlWnd->m_mapFormsInfo.end())
+					g_pTangram->m_pCLRProxy->m_strCurrentWinFormTemplate = it->second;
+			}
+			auto itX = pHtmlWnd->m_mapFormsInfo.find(strUIKey);
+			if (itX != pHtmlWnd->m_mapFormsInfo.end())
+			{
+				auto it2 = pHtmlWnd->m_mapChildFormsInfo.find(strUIKey);
+				if (it2 != pHtmlWnd->m_mapChildFormsInfo.end())
+				{
+					CTangramWinFormWnd* pTangramWinFormWnd = (CTangramWinFormWnd*)::SendMessage(m_hWnd, WM_TANGRAMDATA, 0, 20190214);
+					if (pTangramWinFormWnd && pTangramWinFormWnd->m_pChildFormsInfo == nullptr)
+					{
+						pTangramWinFormWnd->m_pChildFormsInfo = new CMDIChildFormInfo();
+						auto it = pHtmlWnd->m_mapFormsInfo.find(strUIKey);
+						if (it != pHtmlWnd->m_mapFormsInfo.end())
+							pTangramWinFormWnd->m_strXml = it->second;
+						for (auto it : it2->second->m_mapFormsInfo)
+						{
+							pTangramWinFormWnd->m_pChildFormsInfo->m_mapFormsInfo[it.first] = it.second;
+						}
+					}
+					return (LRESULT)it2->second;
+				}
+			}
+			return (LRESULT)::GetWindowLongPtr(m_hWnd, GWLP_USERDATA);
 		}
 		return 0;
 	}
@@ -1097,9 +1140,9 @@ void CNodeWnd::OnWindowPosChanged(WINDOWPOS * lpwndpos)
 	}
 	if (m_pWndNode->m_pWebBrowser)
 		::SetWindowPos(m_pWndNode->m_pWebBrowser->m_hWnd, HWND_TOP, -12, 0, lpwndpos->cx + 24, lpwndpos->cy + 12, SWP_NOACTIVATE | SWP_NOREDRAW);
-	else if(m_hFormWnd){
+	else if (m_hFormWnd) {
 		::SetWindowPos(m_hFormWnd, HWND_TOP, 0, 0, lpwndpos->cx, lpwndpos->cy, SWP_NOACTIVATE | SWP_NOREDRAW);
-	} 	
+	}
 	if (m_pWndNode->m_strID.CompareNoCase(_T("hostview")) && (m_bCreateExternal == false && m_pWndNode->m_pDisp == NULL) && m_pWndNode != m_pWndNode->m_pRootObj)
 	{
 		return;

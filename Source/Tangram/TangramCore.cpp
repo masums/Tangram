@@ -20,6 +20,28 @@
 ********************************************************************************/
 
 // TangramCore.cpp : Implementation of CTangram
+/*
+C:\src\chromium_stable_75\src\third_party\blink\renderer\core\events
+BUILD.gn：
+	"wheel_event.cc",
+	"wheel_event.h",
+	# begin Add by TangramTeam
+	"//chrome_proxy/blink/core/tangram_event.cc",
+	"//chrome_proxy/blink/core/tangram_event.h",
+	# end Add by TangramTeam
+event_type_names.json5
+	"writestart",
+	"zoom",
+	# begin ChromeProxy
+	"tangrammsg",
+	# end ChromeProxy
+event_target_names.json5：
+	"XMLHttpRequest",
+	"XMLHttpRequestUpload",
+	# begin ChromeProxy
+	"Tangram",
+	# end ChromeProxy
+*/
 
 #include "stdafx.h"
 #include "TangramCore.h"
@@ -1684,7 +1706,7 @@ void CTangram::TangramInit()
 		if (::PathFileExists(m_strConfigDataFile) == TRUE)
 			::DeleteFile(m_strConfigDataFile);
 		CString strXml = _T("");
-		strXml.Format(_T("<%s startupclrobj='' developermodel='true' companypathname=''  productname='' />"), g_pTangram->m_strExeName);
+		strXml.Format(_T("<%s developermodel='true' companypathname='%s %s'  productname='%s' />"), g_pTangram->m_strExeName, g_pTangram->m_strExeName, _T(" team"), g_pTangram->m_strExeName);
 		_m_Parse.LoadXml(strXml);
 		_m_Parse.SaveFile(g_pTangram->m_strConfigFile);
 		bLoad = true;
@@ -2081,6 +2103,60 @@ void CTangram::CreateCommonDesignerToolBar()
 		m_hHostWnd = ::CreateWindowEx(WS_EX_WINDOWEDGE | WS_EX_TOOLWINDOW, _T("Tangram Window Class"), m_strDesignerToolBarCaption, WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, 0, 0, 400, 400, NULL, 0, theApp.m_hInstance, NULL);
 		m_hChildHostWnd = ::CreateWindowEx(NULL, _T("Tangram Window Class"), _T(""), WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, m_hHostWnd, 0, theApp.m_hInstance, NULL);
 	}
+
+	if (m_pCLRProxy && m_pCLRProxy->IsSupportDesigner() == false)
+		return;
+	HWND hwnd = ::GetActiveWindow();
+	if (m_hHostWnd&&m_pDesignerWndPage == nullptr)
+	{
+		RECT rc;
+		::GetWindowRect(hwnd, &rc);
+		::SetWindowPos(m_hHostWnd, NULL, rc.left + 40, rc.top + 40, 400, 1000, SWP_NOACTIVATE | SWP_NOREDRAW);
+		if (m_pDesignerWndPage == nullptr)
+		{
+			auto it = m_mapWindowPage.find(m_hHostWnd);
+			if (it != m_mapWindowPage.end())
+				m_pDesignerWndPage = it->second;
+			else
+			{
+				m_pDesignerWndPage = new CComObject<CWndPage>();
+				m_pDesignerWndPage->m_hWnd = m_hHostWnd;
+				m_mapWindowPage[m_hHostWnd] = m_pDesignerWndPage;
+			}
+			//CString strPath = m_strExeName + _T(".designer");
+			//CTangramXmlParse m_Parse;
+			//bool bSupportDesigner = m_Parse.LoadFile(strPath);
+			//if (bSupportDesigner == false)
+			//{
+			//	strPath = m_strProgramFilePath + _T("\\Tangram\\TangramDesigner.designer");
+			//	bSupportDesigner = m_Parse.LoadFile(strPath);
+			//}
+			//if (bSupportDesigner)
+			{
+				m_strDesignerXml = _T("<designertoolbar><window><node name = 'designer' url = 'https://www.tangram.dev/cloud/designer.html'></node></window></designertoolbar>");
+				//m_strDesignerXml = m_Parse.xml();
+				//if (m_strDesignerXml != _T(""))
+				{
+					auto it = m_pDesignerWndPage->m_mapFrame.find(m_hChildHostWnd);
+					if (it == m_pDesignerWndPage->m_mapFrame.end())
+					{
+						IWndFrame* pFrame = nullptr;
+						HRESULT hr = m_pDesignerWndPage->CreateFrame(CComVariant(0), CComVariant((__int64)m_hChildHostWnd), CComBSTR(L"DeignerTool"), &pFrame);
+						if (pFrame)
+						{
+							IWndNode* pNode = nullptr;
+							pFrame->Extend(CComBSTR(L"DeignerToolBox"), CComBSTR(m_strDesignerXml), &pNode);
+							m_pDesignerFrame = (CWndFrame*)pFrame;
+							m_pDesignerFrame->m_bDesignerState = false;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	::ShowWindow(m_hHostWnd, SW_SHOW);
+	::UpdateWindow(m_hHostWnd);
 }
 
 void CTangram::AttachNode(void* pNodeEvents)
@@ -2988,7 +3064,7 @@ STDMETHODIMP CTangram::CreateCLRObj(BSTR bstrObjID, IDispatch** ppDisp)
 
 		if (m_pCLRProxy&&bstrObjID != L"")
 		{
-			*ppDisp = m_pCLRProxy->CreateCLRObj(bstrObjID);
+			*ppDisp = m_pCLRProxy->CreateCLRObj(OLE2T(bstrObjID));
 			if (*ppDisp)
 				(*ppDisp)->AddRef();
 		}
@@ -6681,6 +6757,11 @@ CString CTangram::ConfigJavaVMInfo(CString stroption)
 		}
 	}
 	return strRet;
+}
+
+HICON CTangram::GetAppIcon(int nIndex)
+{
+	return nullptr;
 }
 
 bool CTangram::ImportTangramDocTemplate(CString strFilePath)

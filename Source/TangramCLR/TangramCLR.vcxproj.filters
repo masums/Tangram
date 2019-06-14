@@ -82,6 +82,9 @@
     <ClCompile Include="DefaultNTPCtrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TangramNewChildForm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dllmain.h">
@@ -153,6 +156,9 @@
     <ClInclude Include="DefaultNTPCtrl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TangramNewChildForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TangramCLR.rc">
@@ -195,6 +201,9 @@
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="AcquireTemplateStorageInfoForm.resx">
+      <Filter>Resource Files</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TangramNewChildForm.resx">
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
   </ItemGroup>

@@ -409,16 +409,15 @@ void CSplitterNodeWnd::StopTracking(BOOL bAccept)
 			g_pTangram->m_pDesignWindowNode->m_pRootObj->get_DocXml(&bstrXml);
 			g_pTangram->put_AppKeyValue(CComBSTR(L"TangramDesignerXml"), CComVariant(bstrXml));
 		}
-		//if (pFrame->m_bChromeFrame)
-		//{
-		//	ChromePlus::CHtmlWnd* pWebWnd = (ChromePlus::CHtmlWnd*)::GetWindowLongPtr(pFrame->m_hWnd, GWLP_USERDATA);
-		//	::PostMessage(::GetParent(pWebWnd->m_hWnd), WM_TANGRAMMSG, 20181013, 1);
-		//}
+		ChromePlus::CHtmlWnd* pWebWnd = nullptr;
 		if (pFrame->m_pWebWnd)
 		{
-			ChromePlus::CHtmlWnd* pWebWnd = pFrame->m_pWebWnd;
-			::PostMessage(::GetParent(pWebWnd->m_hWnd), WM_TANGRAMMSG, 20181013, 1);
+			pWebWnd = pFrame->m_pWebWnd;
 		}
+		else if(g_pTangram->m_pDesignWindowNode&&g_pTangram->m_pDesignWindowNode->m_pTangramNodeCommonData->m_pFrame->m_pWebWnd)
+			pWebWnd = g_pTangram->m_pDesignWindowNode->m_pTangramNodeCommonData->m_pFrame->m_pWebWnd;
+		if(pWebWnd)
+			::PostMessage(::GetParent(pWebWnd->m_hWnd), WM_TANGRAMMSG, 20181013, 1);
 	}
 }
 

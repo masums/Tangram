@@ -203,15 +203,8 @@ namespace OfficePlus
 	// ICustomTaskPaneConsumer Methods
 	STDMETHODIMP COfficeAddin::CTPFactoryAvailable(ICTPFactory * CTPFactoryInst)
 	{
-		//m_pCTPFactory.Detach();
 		if(m_pCTPFactory==nullptr)
 			return CTPFactoryInst->QueryInterface(Office::IID_ICTPFactory, (void**)&m_pCTPFactory);
-		//if (m_pCTPFactory == nullptr)
-		//else
-		//{
-		//	m_pCTPFactory.Detach
-		//	return S_OK;
-		//}
 		return S_OK;
 	};
 

@@ -26,9 +26,6 @@
 #include "chromium/BrowserWnd.h"
 
 #pragma once
-class CNodeWnd;
-class CWndNodeEvents;
-class CTangramHtmlTreeWnd;
 class CWndNodeWBEvent : 
 	public CWebPageExtender,
 	public CWebbrowserEvent
@@ -132,6 +129,7 @@ public:
 	CTangramXmlParse* 					m_pDocXmlParseNode;
 	CTangramXmlParse*					m_pHostParse;
 
+	CMDIChildFormInfo*					m_pChildFormsInfo;
 	CTangramNodeCommonData*				m_pTangramNodeCommonData;
 	ChromePlus::CBrowserWnd*			m_pWebBrowser;
 	CWnd*								m_pHostWnd;
@@ -156,6 +154,7 @@ public:
 	BOOL	AddChildNode(CWndNode* pNode);
 	BOOL	RemoveChildNode(CWndNode* pNode);
 	CString GetNames();
+	ChromePlus::CHtmlWnd* GetHtmlWnd();
 
 	HRESULT Fire_ExtendComplete();
 	HRESULT Fire_Destroy();

@@ -21,8 +21,8 @@
 
 #pragma once
 #include <jni.h>
-#include "../tangram/TangramCore.h"
-#include "../tangram/TangramCtrl.h"
+#include "../TangramCore.h"
+#include "../TangramCtrl.h"
 #include "tangrambase.h"
 
 class CEclipseWnd;

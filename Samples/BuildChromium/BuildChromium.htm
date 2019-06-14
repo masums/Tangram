@@ -1,0 +1,67 @@
+﻿<html>
+<head>
+</head>
+<body>
+    <winform objid="BuildChromium.MDIParent1,BuildChromium" formkey="test" showstartup="true" caption="test 1 form" mainwindow="true">
+        <mdiclient>
+            <default>
+                <window>
+                    <node id='splitter' name='properties' rows='2' cols='3' height='300,250,100,' width='300,200,100,' middlecolor='RGB(255,224,192)'>
+                        <node name='tangramtabctrl_Page2' caption='tangramtabctrl_Page1'></node>
+                        <node name='test1'></node>
+                        <node name='test2'></node>
+                        <node name='test3'></node>
+                        <node name='proper'></node>
+                        <node name='test11'></node>
+                    </node>
+                </window>
+            </default>
+            <xxx>
+                <window>
+                    <node id='splitter' name='properties' rows='1' cols='2' height='300,250,100,' width='300,200,100,' middlecolor='RGB(255,224,192)'>
+                        <node name='tangramtabctrl_Page2' id='hostview' caption=''></node>
+                        <node name='test1'></node>
+                    </node>
+                </window>
+            </xxx>
+            <aaa>
+                <window>
+                    <node id='splitter' name='properties' rows='2' cols='1' height='300,250,100,' width='300,200,100,' middlecolor='RGB(255,224,192)'>
+                        <node name='tangramtabctrl_Page2' id='hostview' caption=''></node>
+                        <node name='test1'></node>
+                    </node>
+                </window>
+            </aaa>
+        </mdiclient>
+        <mdichild>
+            <xxx objid="BuildChromium.Form1,BuildChromium" caption="test child form1">
+                <panel1>
+                    <default>
+                        <window>
+                            <node id='splitter' name='properties' rows='1' cols='2' height='300,250,100,' width='300,200,100,' middlecolor='RGB(255,224,192)'>
+                                <node name='tangramtabctrl_Page2' id='hostview' caption=''></node>
+                                <node name='test1'></node>
+                            </node>
+                        </window>
+                    </default>
+                </panel1>
+            </xxx>
+            <aaa objid="BuildChromium.Form2,BuildChromium" caption="test child form2"></aaa>
+        </mdichild>
+    </winform>
+    <winform objid="BuildChromium.MDIParent1,BuildChromium" formkey="test2" showstartup="" caption="test form 123">
+        <mdiclient>
+            <default>
+                <window>
+                    <node id='splitter' name='properties' rows='2' cols='2' height='300,250,' width='300,200,' middlecolor='RGB(255,224,192)'>
+                        <node name='test1'></node>
+                        <node name='test2'></node>
+                        <node name='test3'></node>
+                        <node name='propertiesView' id=''></node>
+                    </node>
+                </window>
+            </default>
+            <mdiclient>
+    </winform>
+</body>
+</html>

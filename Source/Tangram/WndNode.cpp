@@ -50,8 +50,8 @@ CWndNodeWBEvent::CWndNodeWBEvent(CWndNode* pNode)
 {
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_CrtSetBreakAlloc(578);
-	m_pWndNode			= pNode;
-	m_pHTMLDocument2	= nullptr;
+	m_pWndNode = pNode;
+	m_pHTMLDocument2 = nullptr;
 	DispEventAdvise(m_pWndNode->m_pDisp);
 }
 
@@ -73,13 +73,13 @@ void CWndNodeWBEvent::OnNavigateComplete2(IDispatch* pDisp, VARIANT* URL)
 		CComPtr<IDispatch> pDispDoc;
 		pWeb2->get_Document(&pDispDoc);
 		CComQIPtr<IHTMLDocument2> pHtmlDocument2(pDispDoc);
-		if (pHtmlDocument2&&pPage)
+		if (pHtmlDocument2 && pPage)
 		{
 			m_pHTMLDocument2 = pHtmlDocument2.Detach();
 			pPage->m_mapWebPageExtender[m_pHTMLDocument2] = this;
 			CComPtr<IDispatch> pScriptDisp;
 			CComPtr<IDispatchEx> _pScriptEx;
-			if (m_pHTMLDocument2->get_Script(&pScriptDisp) == S_OK&&pScriptDisp->QueryInterface<IDispatchEx>(&_pScriptEx) == S_OK)
+			if (m_pHTMLDocument2->get_Script(&pScriptDisp) == S_OK && pScriptDisp->QueryInterface<IDispatchEx>(&_pScriptEx) == S_OK)
 			{
 				ConnectJSEngine(_pScriptEx);
 				AddObject(_T("Tangram"), g_pTangram);
@@ -96,7 +96,7 @@ void CWndNodeWBEvent::OnNavigateComplete2(IDispatch* pDisp, VARIANT* URL)
 	}
 }
 
-void CWndNodeWBEvent::OnDocumentComplete(IDispatch *pDisp, VARIANT *URL)
+void CWndNodeWBEvent::OnDocumentComplete(IDispatch* pDisp, VARIANT* URL)
 {
 	if (m_pWndNode->m_pDisp == pDisp)
 	{
@@ -105,7 +105,7 @@ void CWndNodeWBEvent::OnDocumentComplete(IDispatch *pDisp, VARIANT *URL)
 		{
 			bool bState = false;
 
-			for (auto it: pPage->m_mapFrame)
+			for (auto it : pPage->m_mapFrame)
 			{
 				for (auto it2 : it.second->m_mapNode)
 				{
@@ -123,7 +123,7 @@ void CWndNodeWBEvent::OnDocumentComplete(IDispatch *pDisp, VARIANT *URL)
 				m_pHTMLDocument2->get_parentWindow(&pWinDisp);
 				pPage->Fire_PageLoaded(pWinDisp.p, CComBSTR(m_pWndNode->m_strURL));
 				CWndFrame* pFrame = m_pWndNode->m_pTangramNodeCommonData->m_pFrame;
-				if (pFrame->m_pInitEventObj&&pFrame->m_pInitEventObj->m_bNotFired)
+				if (pFrame->m_pInitEventObj && pFrame->m_pInitEventObj->m_bNotFired)
 				{
 					pFrame->m_pInitEventObj->m_bNotFired = false;
 					pPage->Fire_TangramEvent(pFrame->m_pInitEventObj);
@@ -137,43 +137,43 @@ void CWndNodeWBEvent::OnDocumentComplete(IDispatch *pDisp, VARIANT *URL)
 CWndNode::CWndNode()
 {
 	g_pTangram->m_nTangramObj++;
-	m_nID						= 0;
-	m_nRow						= 0;
-	m_nCol						= 0;
-	m_nRows						= 1;
-	m_nCols						= 1;
-	m_nViewType					= BlankView;
-
-	m_bTopObj					= false;
-	m_bWebInit					= false;
-	m_bCreated					= false;
-	m_bNodeDocComplete			= false;
-	m_varTag.vt					= VT_EMPTY;
-	m_strKey					= _T("");
-	m_strXmlFileFromVS			= _T("");
-	m_strURL					= _T("");
-	m_strNodeName				= _T("");
-	m_strExtenderID				= _T("");
-	m_hHostWnd					= NULL;
-	m_hChildHostWnd				= NULL;
-	m_pDisp						= nullptr;
-	m_pVSDocument				= nullptr;
-	m_pHostFrame				= nullptr;
-	m_pRootObj					= nullptr;
-	m_pHostWnd					= nullptr;
-	m_pExtender					= nullptr;
-	m_pParentObj				= nullptr;
-	m_pObjClsInfo				= nullptr;
-	m_pVisibleXMLObj			= nullptr;
-	m_pCLREventConnector		= nullptr;
-	m_pTangramNodeWBEvent		= nullptr;
-	m_pChildNodeCollection		= nullptr;
-	m_pCurrentExNode			= nullptr;
-	m_pHostParse				= nullptr;
-	m_pDocXmlParseNode			= nullptr;
-	m_pWebBrowser				= nullptr;
-	m_pTangramNodeCommonData	= nullptr;
-	g_pTangram->m_pActiveNode	= this;
+	m_nID = 0;
+	m_nRow = 0;
+	m_nCol = 0;
+	m_nRows = 1;
+	m_nCols = 1;
+	m_nViewType = BlankView;
+	m_pChildFormsInfo = nullptr;
+	m_bTopObj = false;
+	m_bWebInit = false;
+	m_bCreated = false;
+	m_bNodeDocComplete = false;
+	m_varTag.vt = VT_EMPTY;
+	m_strKey = _T("");
+	m_strXmlFileFromVS = _T("");
+	m_strURL = _T("");
+	m_strNodeName = _T("");
+	m_strExtenderID = _T("");
+	m_hHostWnd = NULL;
+	m_hChildHostWnd = NULL;
+	m_pDisp = nullptr;
+	m_pVSDocument = nullptr;
+	m_pHostFrame = nullptr;
+	m_pRootObj = nullptr;
+	m_pHostWnd = nullptr;
+	m_pExtender = nullptr;
+	m_pParentObj = nullptr;
+	m_pObjClsInfo = nullptr;
+	m_pVisibleXMLObj = nullptr;
+	m_pCLREventConnector = nullptr;
+	m_pTangramNodeWBEvent = nullptr;
+	m_pChildNodeCollection = nullptr;
+	m_pCurrentExNode = nullptr;
+	m_pHostParse = nullptr;
+	m_pDocXmlParseNode = nullptr;
+	m_pWebBrowser = nullptr;
+	m_pTangramNodeCommonData = nullptr;
+	g_pTangram->m_pActiveNode = this;
 	if (g_pTangram->m_pTangramPackageProxy)
 	{
 		m_strXmlFileFromVS = g_pTangram->m_pTangramPackageProxy->m_strCurrentXtmlFilePath;
@@ -195,7 +195,7 @@ void CWndNode::InitWndNode()
 	{
 		m_strName.Format(_T("Node_%p"), (LONGLONG)this);
 	}
-	if (m_pTangramNodeCommonData->m_pFrame&&m_pTangramNodeCommonData->m_pFrame->m_pPage)
+	if (m_pTangramNodeCommonData->m_pFrame && m_pTangramNodeCommonData->m_pFrame->m_pPage)
 	{
 		m_strNodeName = m_strName + _T("@") + g_pTangram->m_strCurrentKey + _T("@") + m_pTangramNodeCommonData->m_pFrame->m_strFrameName;
 		auto it2 = m_pTangramNodeCommonData->m_pPage->m_mapNode.find(m_strNodeName);
@@ -210,7 +210,7 @@ void CWndNode::InitWndNode()
 	m_strCnnID = m_pHostParse->attr(TGM_CNN_ID, _T(""));
 	m_strCnnID.MakeLower();
 	m_strCnnID.Trim();
-	if (m_strID==_T("")&&m_strCnnID==_T("")&&m_strXmlFileFromVS != _T(""))
+	if (m_strID == _T("") && m_strCnnID == _T("") && m_strXmlFileFromVS != _T(""))
 	{
 		CString strLocalurl = m_pHostParse->attr(_T("localurl"), _T(""));
 		if (strLocalurl != _T("") && ::PathFileExists(m_strXmlFileFromVS))
@@ -226,7 +226,7 @@ void CWndNode::InitWndNode()
 	}
 
 	TangramWndClsInfo* pWndClsInfo = nullptr;
-	if (g_pTangram->m_TabWndClassInfoDictionary.Lookup(LPCTSTR(m_strID), (void *&)pWndClsInfo))
+	if (g_pTangram->m_TabWndClassInfoDictionary.Lookup(LPCTSTR(m_strID), (void*&)pWndClsInfo))
 		m_pObjClsInfo = pWndClsInfo->m_pTabWndClsInfo;
 
 	if (m_pObjClsInfo == nullptr)
@@ -246,7 +246,7 @@ CWndNode::~CWndNode()
 		g_pTangram->m_pActiveNode = nullptr;
 	if (m_pTangramNodeCommonData->m_pOldFrame)
 		m_pTangramNodeCommonData->m_pFrame = m_pTangramNodeCommonData->m_pOldFrame;
-	CWndFrame* pFrame = m_pTangramNodeCommonData->m_pFrame;
+	CWndFrame * pFrame = m_pTangramNodeCommonData->m_pFrame;
 	if (pFrame->m_pPage)
 	{
 		auto it = pFrame->m_pPage->m_mapNode.find(m_strNodeName);
@@ -255,7 +255,7 @@ CWndNode::~CWndNode()
 	}
 	if (pFrame->m_pWorkNode == this)
 		pFrame->m_pWorkNode = nullptr;
-	if (m_strKey!=_T(""))
+	if (m_strKey != _T(""))
 	{
 		auto it = pFrame->m_mapNode.find(m_strKey);
 		if (it != pFrame->m_mapNode.end())
@@ -294,7 +294,7 @@ CWndNode::~CWndNode()
 		m_pExtender = nullptr;
 	}
 
-	if (m_nViewType != TangramTreeView&&m_nViewType != Splitter&&m_pDisp)
+	if (m_nViewType != TangramTreeView && m_nViewType != Splitter && m_pDisp)
 		CCommonFunction::ClearObject<IUnknown>(m_pDisp);
 
 	m_vChildNodes.clear();
@@ -302,7 +302,7 @@ CWndNode::~CWndNode()
 	if (m_pChildNodeCollection != nullptr)
 	{
 		dw = m_pChildNodeCollection->Release();
-		while(dw)
+		while (dw)
 			dw = m_pChildNodeCollection->Release();
 		m_pChildNodeCollection = nullptr;
 	}
@@ -329,7 +329,7 @@ CString CWndNode::GetNames()
 	return strRet;
 }
 
-CString CWndNode::_GetNames(CWndNode* pNode)
+CString CWndNode::_GetNames(CWndNode * pNode)
 {
 	CString strRet = _T("");
 	if (pNode)
@@ -345,14 +345,32 @@ CString CWndNode::_GetNames(CWndNode* pNode)
 	return strRet;
 }
 
-BOOL CWndNode::PreTranslateMessage(MSG* pMsg)
+ChromePlus::CHtmlWnd* CWndNode::GetHtmlWnd()
+{
+	if (m_pRootObj)
+	{
+		HWND hWnd = m_pTangramNodeCommonData->m_pFrame->m_pPage->m_hWnd;
+		hWnd = (HWND)::GetWindowLongPtr(hWnd, GWLP_USERDATA);
+		if (::IsWindow(hWnd))
+		{
+			::GetClassName(hWnd, g_pTangram->m_szBuffer, 256);
+			CString strName = CString(g_pTangram->m_szBuffer);
+			if (strName == _T("Chrome Extended Window Class")) {
+				return (ChromePlus::CHtmlWnd*)::GetWindowLongPtr(hWnd, GWLP_USERDATA);
+			}
+		}
+	}
+	return nullptr;
+}
+
+BOOL CWndNode::PreTranslateMessage(MSG * pMsg)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	if(m_pHostWnd&&pMsg->message != WM_MOUSEMOVE)
+	if (m_pHostWnd && pMsg->message != WM_MOUSEMOVE)
 	{
 		m_pHostWnd->PreTranslateMessage(pMsg);
 
-		for(auto it : m_vChildNodes)
+		for (auto it : m_vChildNodes)
 		{
 			it->PreTranslateMessage(pMsg);
 		}
@@ -378,84 +396,84 @@ STDMETHODIMP CWndNode::LoadXML(int nType, BSTR bstrXML)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::ActiveTabPage(IWndNode* _pNode)
+STDMETHODIMP CWndNode::ActiveTabPage(IWndNode * _pNode)
 {
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::Extend(BSTR bstrKey, BSTR bstrXml, IWndNode** ppRetNode)
+STDMETHODIMP CWndNode::Extend(BSTR bstrKey, BSTR bstrXml, IWndNode * *ppRetNode)
 {
 	switch (m_nViewType)
 	{
 	case ActiveX:
 	case CLRCtrl:
 	case BlankView:
+	{
+		if (m_nViewType == BlankView)
 		{
-			if (m_nViewType == BlankView)
+			if (m_pParentObj && m_pParentObj->m_nViewType == Splitter)
 			{
-				if (m_pParentObj&&m_pParentObj->m_nViewType == Splitter)
-				{
-					return m_pParentObj->ExtendEx(m_nRow, m_nCol, bstrKey, bstrXml, ppRetNode);
-				}
-			}
-			if (m_pTangramNodeCommonData->m_pPage)
-			{
-				if (m_nViewType == BlankView&& m_pParentObj&&m_pParentObj->m_nViewType == Splitter)
-				{
-					return m_pParentObj->ExtendEx(m_nRow, m_nCol, bstrKey, bstrXml, ppRetNode);
-				}
-				if (m_pHostFrame == nullptr)
-				{
-					CString strName = m_strNodeName;
-					strName += _T("_Frame");
-
-					if (m_nViewType == BlankView)
-					{
-						RECT rc;
-						::GetClientRect(m_pHostWnd->m_hWnd, &rc);
-						m_hHostWnd = ::CreateWindowEx(NULL, L"Tangram Window Class", NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0, 0, rc.right, rc.bottom, m_pHostWnd->m_hWnd, NULL, AfxGetInstanceHandle(), NULL);
-					}
-					else
-					{
-						m_hHostWnd = ::GetWindow(m_pHostWnd->m_hWnd,GW_CHILD);
-					}
-					m_pTangramNodeCommonData->m_pPage->CreateFrame(CComVariant(0),CComVariant((long)m_hHostWnd),strName.AllocSysString(),&m_pHostFrame);
-				}
-				if (m_pHostFrame&&::IsWindow(m_hHostWnd))
-				{
-					CWndFrame* _pFrame = (CWndFrame*)m_pHostFrame;
-					_pFrame->m_pHostNode = this;
-					if (m_pTangramNodeCommonData->m_pFrame->m_pParentNode)
-					{
-						_pFrame->m_pParentNode = m_pTangramNodeCommonData->m_pFrame->m_pParentNode;
-					}
-					return m_pHostFrame->Extend(bstrKey, bstrXml, ppRetNode);
-				}
+				return m_pParentObj->ExtendEx(m_nRow, m_nCol, bstrKey, bstrXml, ppRetNode);
 			}
 		}
-		break;
+		if (m_pTangramNodeCommonData->m_pPage)
+		{
+			if (m_nViewType == BlankView && m_pParentObj && m_pParentObj->m_nViewType == Splitter)
+			{
+				return m_pParentObj->ExtendEx(m_nRow, m_nCol, bstrKey, bstrXml, ppRetNode);
+			}
+			if (m_pHostFrame == nullptr)
+			{
+				CString strName = m_strNodeName;
+				strName += _T("_Frame");
+
+				if (m_nViewType == BlankView)
+				{
+					RECT rc;
+					::GetClientRect(m_pHostWnd->m_hWnd, &rc);
+					m_hHostWnd = ::CreateWindowEx(NULL, L"Tangram Window Class", NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0, 0, rc.right, rc.bottom, m_pHostWnd->m_hWnd, NULL, AfxGetInstanceHandle(), NULL);
+				}
+				else
+				{
+					m_hHostWnd = ::GetWindow(m_pHostWnd->m_hWnd, GW_CHILD);
+				}
+				m_pTangramNodeCommonData->m_pPage->CreateFrame(CComVariant(0), CComVariant((long)m_hHostWnd), strName.AllocSysString(), &m_pHostFrame);
+			}
+			if (m_pHostFrame && ::IsWindow(m_hHostWnd))
+			{
+				CWndFrame* _pFrame = (CWndFrame*)m_pHostFrame;
+				_pFrame->m_pHostNode = this;
+				if (m_pTangramNodeCommonData->m_pFrame->m_pParentNode)
+				{
+					_pFrame->m_pParentNode = m_pTangramNodeCommonData->m_pFrame->m_pParentNode;
+				}
+				return m_pHostFrame->Extend(bstrKey, bstrXml, ppRetNode);
+			}
+		}
+	}
+	break;
 	case Splitter:
 		break;
 	}
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::ExtendEx(int nRow, int nCol, BSTR bstrKey, BSTR bstrXml, IWndNode** ppRetNode)
+STDMETHODIMP CWndNode::ExtendEx(int nRow, int nCol, BSTR bstrKey, BSTR bstrXml, IWndNode * *ppRetNode)
 {
-	if (m_pTangramNodeCommonData->m_pPage&&m_nViewType== Splitter)
+	if (m_pTangramNodeCommonData->m_pPage && m_nViewType == Splitter)
 	{
 		IWndNode* pNode = nullptr;
 		GetNode(nRow, nCol, &pNode);
 		if (pNode == nullptr)
 			return S_OK;
-		CWndNode* pWindowNode = (CWndNode*)pNode;
+		CWndNode * pWindowNode = (CWndNode*)pNode;
 		if (pWindowNode->m_pHostFrame == nullptr)
 		{
 			CString strName = pWindowNode->m_strNodeName;
 			strName += _T("_Frame");
 
-			::SetWindowLong(pWindowNode->m_pHostWnd->m_hWnd,GWL_ID,1);
-			m_pTangramNodeCommonData->m_pPage->CreateFrame(CComVariant(0),CComVariant((long)pWindowNode->m_pHostWnd->m_hWnd),strName.AllocSysString(),&pWindowNode->m_pHostFrame);
+			::SetWindowLong(pWindowNode->m_pHostWnd->m_hWnd, GWL_ID, 1);
+			m_pTangramNodeCommonData->m_pPage->CreateFrame(CComVariant(0), CComVariant((long)pWindowNode->m_pHostWnd->m_hWnd), strName.AllocSysString(), &pWindowNode->m_pHostFrame);
 			CWndFrame* _pFrame = (CWndFrame*)pWindowNode->m_pHostFrame;
 			if (m_pTangramNodeCommonData->m_pFrame->m_pParentNode)
 			{
@@ -465,7 +483,6 @@ STDMETHODIMP CWndNode::ExtendEx(int nRow, int nCol, BSTR bstrKey, BSTR bstrXml, 
 			{
 				_pFrame->m_bChromeFrame = true;
 				_pFrame->m_pWebWnd = (ChromePlus::CHtmlWnd*)::GetWindowLongPtr(m_pTangramNodeCommonData->m_pFrame->m_hWnd, GWLP_USERDATA);
-				//::SetWindowLongPtr(pWindowNode->m_pHostWnd->m_hWnd, GWLP_USERDATA, (LONG_PTR)::GetWindowLongPtr(m_pTangramNodeCommonData->m_pFrame->m_hWnd, GWLP_USERDATA));
 			}
 			((CWndFrame*)pWindowNode->m_pHostFrame)->m_pDoc = m_pTangramNodeCommonData->m_pFrame->m_pDoc;
 		}
@@ -474,13 +491,13 @@ STDMETHODIMP CWndNode::ExtendEx(int nRow, int nCol, BSTR bstrKey, BSTR bstrXml, 
 		{
 			if (pWindowNode->m_pCurrentExNode)
 			{
-				::SetWindowLong(pWindowNode->m_pCurrentExNode->m_pHostWnd->m_hWnd, GWL_ID,1);
+				::SetWindowLong(pWindowNode->m_pCurrentExNode->m_pHostWnd->m_hWnd, GWL_ID, 1);
 			}
 			HRESULT hr = pWindowNode->m_pHostFrame->Extend(bstrKey, bstrXml, ppRetNode);
 			long dwID = AFX_IDW_PANE_FIRST + nRow * 16 + nCol;
 			if (hr != S_OK)
 			{
-				if(pWindowNode->m_pCurrentExNode)
+				if (pWindowNode->m_pCurrentExNode)
 					::SetWindowLong(pWindowNode->m_pCurrentExNode->m_pHostWnd->m_hWnd, GWL_ID, dwID);
 				else
 					::SetWindowLong(pWindowNode->m_pHostWnd->m_hWnd, GWL_ID, dwID);
@@ -491,7 +508,7 @@ STDMETHODIMP CWndNode::ExtendEx(int nRow, int nCol, BSTR bstrKey, BSTR bstrXml, 
 				}
 				return S_OK;
 			}
-			CWndNode* pRootNode = (CWndNode*)*ppRetNode;
+			CWndNode* pRootNode = (CWndNode*)* ppRetNode;
 			pWindowNode->m_pCurrentExNode = pRootNode;
 			::SetWindowLongPtr(pRootNode->m_pHostWnd->m_hWnd, GWLP_ID, dwID);
 			ChromePlus::CHtmlWnd* pWebWnd = _pFrame->m_pWebWnd;
@@ -509,7 +526,7 @@ STDMETHODIMP CWndNode::ExtendEx(int nRow, int nCol, BSTR bstrKey, BSTR bstrXml, 
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_Tag(VARIANT* pVar)
+STDMETHODIMP CWndNode::get_Tag(VARIANT * pVar)
 {
 	*pVar = m_varTag;
 
@@ -524,7 +541,7 @@ STDMETHODIMP CWndNode::put_Tag(VARIANT var)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_XObject(VARIANT* pVar)
+STDMETHODIMP CWndNode::get_XObject(VARIANT * pVar)
 {
 	pVar->vt = VT_EMPTY;
 	if (m_pDisp)
@@ -536,7 +553,7 @@ STDMETHODIMP CWndNode::get_XObject(VARIANT* pVar)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_AxPlugIn(BSTR bstrPlugInName, IDispatch** pVal)
+STDMETHODIMP CWndNode::get_AxPlugIn(BSTR bstrPlugInName, IDispatch * *pVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 
@@ -544,17 +561,17 @@ STDMETHODIMP CWndNode::get_AxPlugIn(BSTR bstrPlugInName, IDispatch** pVal)
 	strObjName.Trim();
 	strObjName.MakeLower();
 	IDispatch* pDisp = nullptr;
-	if(m_pTangramNodeCommonData->m_PlugInDispDictionary.Lookup(LPCTSTR(strObjName),(void*&)pDisp))
+	if (m_pTangramNodeCommonData->m_PlugInDispDictionary.Lookup(LPCTSTR(strObjName), (void*&)pDisp))
 	{
-		* pVal = pDisp;
-		(* pVal)->AddRef();
+		*pVal = pDisp;
+		(*pVal)->AddRef();
 	}
 	else
 		*pVal = nullptr;
 	return S_OK;
-} 
+}
 
-STDMETHODIMP CWndNode::get_Name(BSTR* pVal)
+STDMETHODIMP CWndNode::get_Name(BSTR * pVal)
 {
 	*pVal = m_strName.AllocSysString();
 	return S_OK;
@@ -564,7 +581,7 @@ STDMETHODIMP CWndNode::put_Name(BSTR bstrNewName)
 {
 	CString strName = OLE2T(bstrNewName);
 	strName.Trim();
-	strName.Replace(_T(","),_T(""));
+	strName.Replace(_T(","), _T(""));
 	if (m_pHostParse != NULL)
 	{
 		CString _strName = _T(",");
@@ -580,13 +597,13 @@ STDMETHODIMP CWndNode::put_Name(BSTR bstrNewName)
 		}
 		else
 		{
-			::MessageBox(NULL,_T("Modify name failed!"),_T("Tangram"),MB_OK);
+			::MessageBox(NULL, _T("Modify name failed!"), _T("Tangram"), MB_OK);
 		}
 	}
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_Attribute(BSTR bstrKey, BSTR* pVal)
+STDMETHODIMP CWndNode::get_Attribute(BSTR bstrKey, BSTR * pVal)
 {
 	if (m_pHostParse != nullptr)
 	{
@@ -602,19 +619,19 @@ STDMETHODIMP CWndNode::put_Attribute(BSTR bstrKey, BSTR bstrVal)
 	{
 		CString strID = OLE2T(bstrKey);
 		CString strVal = OLE2T(bstrVal);
-		if(strID.CompareNoCase(_T("id")))
+		if (strID.CompareNoCase(_T("id")))
 			m_strID = strVal;
 		ATLTRACE(_T("Modify CWndNode Attribute: ID: %s Value: %s\n"), strID, strVal);
 		CWndFrame* pFrame = nullptr;
 		if (strVal.CompareNoCase(_T("hostview")) == 0 && g_pTangram->m_pDesignWindowNode)
 		{
 			pFrame = g_pTangram->m_pDesignWindowNode->m_pRootObj->m_pTangramNodeCommonData->m_pFrame;
-			if (g_pTangram->m_pMDIMainWnd&&g_pTangram->m_pActiveTemplate == nullptr&&pFrame->m_hWnd == g_pTangram->m_pMDIMainWnd->m_hMDIClient)
+			if (g_pTangram->m_pMDIMainWnd && g_pTangram->m_pActiveTemplate == nullptr && pFrame->m_hWnd == g_pTangram->m_pMDIMainWnd->m_hMDIClient)
 			{
 				::MessageBox(nullptr, _T("Default UI Don't have a MDI Client!"), _T("Tangram"), MB_OK);
 				return S_FALSE;
 			}
-			if (g_pTangram->m_pDesignWindowNode&&pFrame->m_pBindingNode)
+			if (g_pTangram->m_pDesignWindowNode && pFrame->m_pBindingNode)
 			{
 				CWndNode* pOldNode = pFrame->m_pBindingNode;
 				if (pOldNode->m_pTangramNodeCommonData->m_pOldFrame)
@@ -623,7 +640,7 @@ STDMETHODIMP CWndNode::put_Attribute(BSTR bstrKey, BSTR bstrVal)
 					pOldNode->m_pTangramNodeCommonData->m_pOldFrame = nullptr;
 				}
 				CWndNode* pParent = pOldNode->m_pParentObj;
-				if (pParent&&pParent->m_nViewType == Splitter)
+				if (pParent && pParent->m_nViewType == Splitter)
 				{
 					if (pOldNode != this)
 					{
@@ -633,7 +650,7 @@ STDMETHODIMP CWndNode::put_Attribute(BSTR bstrKey, BSTR bstrVal)
 							pWnd->m_pHostNode = this;
 					}
 				}
-				if (m_pParentObj&&m_pParentObj->m_nViewType == Splitter)
+				if (m_pParentObj && m_pParentObj->m_nViewType == Splitter)
 				{
 					CSplitterNodeWnd* pWnd = (CSplitterNodeWnd*)m_pParentObj->m_pHostWnd;
 					pWnd->m_pHostNode = this;
@@ -646,6 +663,7 @@ STDMETHODIMP CWndNode::put_Attribute(BSTR bstrKey, BSTR bstrVal)
 				g_pTangram->UpdateWndNode(g_pTangram->m_pDesignWindowNode->m_pRootObj);
 				g_pTangram->put_AppKeyValue(CComBSTR(L"TangramDesignerXml"), CComVariant(g_pTangram->m_pDesignWindowNode->m_pRootObj->m_pTangramNodeCommonData->m_pTangramParse->xml()));
 			}
+
 			m_strID = _T("hostview");
 			CWndNode* pTopNode = m_pRootObj;
 			pTopNode->m_pTangramNodeCommonData->m_pHostClientView = (CNodeWnd*)m_pHostWnd;
@@ -664,7 +682,7 @@ STDMETHODIMP CWndNode::put_Attribute(BSTR bstrKey, BSTR bstrVal)
 				g_pTangram->m_pDesignWindowNode->m_pTangramNodeCommonData->m_pHostClientView = m_pRootObj->m_pTangramNodeCommonData->m_pHostClientView;
 			}
 
-			if (m_pParentObj&&m_pParentObj->m_nViewType == Splitter)
+			if (m_pParentObj && m_pParentObj->m_nViewType == Splitter)
 				m_pHostWnd->ModifyStyleEx(WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE, 0);
 			m_pTangramNodeCommonData->m_pFrame->HostPosChanged();
 			if (m_pTangramNodeCommonData->m_pFrame->m_bChromeFrame)
@@ -683,7 +701,7 @@ STDMETHODIMP CWndNode::put_Attribute(BSTR bstrKey, BSTR bstrVal)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_Caption(BSTR* pVal)
+STDMETHODIMP CWndNode::get_Caption(BSTR * pVal)
 {
 	*pVal = m_strCaption.AllocSysString();
 	return S_OK;
@@ -697,42 +715,42 @@ STDMETHODIMP CWndNode::put_Caption(BSTR bstrCaption)
 
 	if (m_pParentObj != nullptr && m_pParentObj->m_pHostWnd != nullptr)
 	{
-		m_pParentObj->m_pHostWnd->SendMessage(WM_TGM_SET_CAPTION,m_nCol,(LPARAM)str.GetBuffer());
+		m_pParentObj->m_pHostWnd->SendMessage(WM_TGM_SET_CAPTION, m_nCol, (LPARAM)str.GetBuffer());
 	}
 
 	if (m_pHostParse != nullptr)
 	{
-		m_pHostParse->put_attr(L"caption",str);
+		m_pHostParse->put_attr(L"caption", str);
 	}
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_Handle(LONGLONG* pVal)
+STDMETHODIMP CWndNode::get_Handle(LONGLONG * pVal)
 {
-	if(m_pHostWnd)	
-		*pVal = (LONGLONG)m_pHostWnd->m_hWnd;
+	if (m_pHostWnd)
+		* pVal = (LONGLONG)m_pHostWnd->m_hWnd;
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_OuterXml(BSTR* pVal)
+STDMETHODIMP CWndNode::get_OuterXml(BSTR * pVal)
 {
 	*pVal = m_pTangramNodeCommonData->m_pTangramParse->xml().AllocSysString();
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_Key(BSTR* pVal)
+STDMETHODIMP CWndNode::get_Key(BSTR * pVal)
 {
 	*pVal = m_pRootObj->m_strKey.AllocSysString();
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_XML(BSTR* pVal)
+STDMETHODIMP CWndNode::get_XML(BSTR * pVal)
 {
 	*pVal = m_pHostParse->xml().AllocSysString();
 	return S_OK;
 }
 
-BOOL CWndNode::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext)
+BOOL CWndNode::Create(DWORD dwStyle, const RECT & rect, CWnd * pParentWnd, UINT nID, CCreateContext * pContext)
 {
 	HWND hWnd = 0;
 	BOOL bRet = false;
@@ -825,7 +843,7 @@ BOOL CWndNode::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nI
 			}
 		}
 
-		if(::IsWindow(hWnd)==false)
+		if (::IsWindow(hWnd) == false)
 		{
 			ICreator* pViewFactoryDisp = nullptr;
 			auto it = g_pTangram->m_mapObjDic.find(m_strCnnID);
@@ -843,7 +861,7 @@ BOOL CWndNode::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nI
 					{
 						if (g_pTangram->m_pAppDisp)
 						{
-							g_pTangram->m_pAppDisp->QueryInterface(IID_ICreator, (void**)&pViewFactoryDisp);
+							g_pTangram->m_pAppDisp->QueryInterface(IID_ICreator, (void**)& pViewFactoryDisp);
 							if (pViewFactoryDisp)
 								g_pTangram->m_mapObjDic[m_strCnnID] = pViewFactoryDisp;
 						}
@@ -876,13 +894,13 @@ BOOL CWndNode::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nI
 		}
 	}
 
-	if (!::IsWindow(m_pHostWnd->m_hWnd) && hWnd&&pTangramDesignView->SubclassWindow(hWnd))
+	if (!::IsWindow(m_pHostWnd->m_hWnd) && hWnd && pTangramDesignView->SubclassWindow(hWnd))
 	{
-		if(isAppWnd==false)
+		if (isAppWnd == false)
 			::SetWindowLong(hWnd, GWL_STYLE, dwStyle | WS_CHILD | /*WS_VISIBLE | */WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
 		else
 		{
-			if(m_pParentObj&&m_pParentObj->m_nViewType==Splitter)
+			if (m_pParentObj && m_pParentObj->m_nViewType == Splitter)
 				m_pHostWnd->ModifyStyleEx(0, WS_EX_CLIENTEDGE);
 		}
 		::SetWindowLong(hWnd, GWL_ID, nID);
@@ -896,10 +914,10 @@ BOOL CWndNode::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nI
 		hWnd = CreateWindow(L"Tangram Window Class", NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0, 0, 0, 0, pParentWnd->m_hWnd, (HMENU)nID, AfxGetInstanceHandle(), NULL);
 		if (::IsWindow(m_pHostWnd->m_hWnd) == false)
 			bRet = m_pHostWnd->SubclassWindow(hWnd);
-		if(m_nViewType==BlankView&& m_pHostParse != nullptr)
+		if (m_nViewType == BlankView && m_pHostParse != nullptr)
 		{
 			CString strURL = m_pHostParse->attr(_T("url"), _T(""));
-			if (m_pWebBrowser == nullptr&&strURL != _T(""))
+			if (m_pWebBrowser == nullptr && strURL != _T(""))
 			{
 				strURL += _T("|");
 				if (g_pTangram->m_pCreatorImpl)
@@ -1104,11 +1122,11 @@ BOOL CWndNode::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nI
 	bRet = true;
 
 	//Very important:
-	if (m_pHostWnd&&::IsWindow(m_pHostWnd->m_hWnd))
+	if (m_pHostWnd && ::IsWindow(m_pHostWnd->m_hWnd))
 		m_pHostWnd->SendMessage(WM_INITIALUPDATE);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
-	if (g_pTangram->m_pActiveNode&&g_pTangram->m_pActiveNode->m_pTangramNodeCommonData->m_pPage)
+	if (g_pTangram->m_pActiveNode && g_pTangram->m_pActiveNode->m_pTangramNodeCommonData->m_pPage)
 		g_pTangram->m_pActiveNode->m_pTangramNodeCommonData->m_pPage->Fire_NodeCreated(this);
 
 	if (m_pTangramNodeCommonData->m_pFrame->m_bChromeFrame)
@@ -1138,128 +1156,160 @@ HWND CWndNode::CreateView(HWND hParentWnd, CString strTag)
 	switch (m_nViewType)
 	{
 	case ActiveX:
+	{
+		auto it = m_pTangramNodeCommonData->m_mapAxNodes.find(strName);
+		if (it == m_pTangramNodeCommonData->m_mapAxNodes.end())
 		{
-			auto it = m_pTangramNodeCommonData->m_mapAxNodes.find(strName);
-			if (it == m_pTangramNodeCommonData->m_mapAxNodes.end())
+			m_pTangramNodeCommonData->m_mapAxNodes[strName] = this;
+		}
+		else
+		{
+			int nCount = m_pTangramNodeCommonData->m_mapAxNodes.size();
+			CString str = _T("");
+			str.Format(_T("%s%d"), strName, nCount);
+			it = m_pTangramNodeCommonData->m_mapAxNodes.find(str);
+			while (it != m_pTangramNodeCommonData->m_mapAxNodes.end())
 			{
-				m_pTangramNodeCommonData->m_mapAxNodes[strName] = this;
-			}
-			else
-			{
-				int nCount = m_pTangramNodeCommonData->m_mapAxNodes.size();
-				CString str = _T("");
-				str.Format(_T("%s%d"), strName,nCount);
+				nCount++;
+				str.Format(_T("%s%d"), strName, nCount);
 				it = m_pTangramNodeCommonData->m_mapAxNodes.find(str);
-				while (it != m_pTangramNodeCommonData->m_mapAxNodes.end())
+			}
+			m_pTangramNodeCommonData->m_mapAxNodes[str] = this;
+			put_Attribute(CComBSTR("name"), str.AllocSysString());
+		}
+		strID.MakeLower();
+		auto nPos = strID.Find(_T("http:"));
+		if (nPos == -1)
+			nPos = strID.Find(_T("https:"));
+		if (m_pTangramNodeCommonData->m_pFrame)
+		{
+			CComBSTR bstr;
+			get_Attribute(CComBSTR("initInfo"), &bstr);
+			CString str = _T("");
+			str += bstr;
+			if (str != _T("") && m_pTangramNodeCommonData->m_pPage)
+			{
+				LRESULT hr = ::SendMessage(m_pTangramNodeCommonData->m_pPage->m_hWnd, WM_GETNODEINFO, (WPARAM)OLE2T(bstr), (LPARAM)hParentWnd);
+				if (hr)
 				{
-					nCount++;
-					str.Format(_T("%s%d"), strName, nCount);
-					it = m_pTangramNodeCommonData->m_mapAxNodes.find(str);
-				}
-				m_pTangramNodeCommonData->m_mapAxNodes[str] = this;
-				put_Attribute(CComBSTR("name"), str.AllocSysString());
-			}
-			strID.MakeLower();
-			auto nPos = strID.Find(_T("http:"));
-			if (nPos == -1)
-				nPos = strID.Find(_T("https:"));
-			if (m_pTangramNodeCommonData->m_pFrame)
-			{
-				CComBSTR bstr;
-				get_Attribute(CComBSTR("initInfo"), &bstr);
-				CString str = _T("");
-				str += bstr;
-				if (str != _T("") && m_pTangramNodeCommonData->m_pPage)
-				{
-					LRESULT hr = ::SendMessage(m_pTangramNodeCommonData->m_pPage->m_hWnd, WM_GETNODEINFO, (WPARAM)OLE2T(bstr), (LPARAM)hParentWnd);
-					if (hr)
-					{
-						CString strInfo = _T("");
-						CWindow m_wnd;
-						m_wnd.Attach(hParentWnd);
-						m_wnd.GetWindowText(strInfo);
-						strID += strInfo;
-						m_wnd.Detach();
-					}
-				}
-			}
-
-			if (strID.Find(_T("http://")) != -1 || strID.Find(_T("https://")) != -1)
-			{
-				bWebCtrl = true;
-				strURL = strID;
-				strID = _T("shell.explorer.2");
-			}
-
-			if (strID.Find(_T("res://")) != -1 || ::PathFileExists(strID))
-			{
-				bWebCtrl = true;
-				strURL = strID;
-				strID = _T("shell.explorer.2");
-			}
-
-			if (strID.CompareNoCase(_T("about:blank")) ==0 )
-			{
-				bWebCtrl = true;
-				strURL = strID;
-				strID = _T("shell.explorer.2");
-			}
-
-			if (m_pDisp == nullptr)
-			{
-				CComPtr<IDispatch> pDisp;
-				HRESULT hr = pDisp.CoCreateInstance(CComBSTR(strID));
-				if (hr == S_OK)
-				{
-					m_pDisp = pDisp.Detach();
+					CString strInfo = _T("");
+					CWindow m_wnd;
+					m_wnd.Attach(hParentWnd);
+					m_wnd.GetWindowText(strInfo);
+					strID += strInfo;
+					m_wnd.Detach();
 				}
 			}
 		}
-		break;
-	case CLRCtrl:
+
+		if (strID.Find(_T("http://")) != -1 || strID.Find(_T("https://")) != -1)
 		{
-			auto it = m_pTangramNodeCommonData->m_mapCLRNodes.find(strName);
-			if (it == m_pTangramNodeCommonData->m_mapCLRNodes.end())
+			bWebCtrl = true;
+			strURL = strID;
+			strID = _T("shell.explorer.2");
+		}
+
+		if (strID.Find(_T("res://")) != -1 || ::PathFileExists(strID))
+		{
+			bWebCtrl = true;
+			strURL = strID;
+			strID = _T("shell.explorer.2");
+		}
+
+		if (strID.CompareNoCase(_T("about:blank")) == 0)
+		{
+			bWebCtrl = true;
+			strURL = strID;
+			strID = _T("shell.explorer.2");
+		}
+
+		if (m_pDisp == nullptr)
+		{
+			CComPtr<IDispatch> pDisp;
+			HRESULT hr = pDisp.CoCreateInstance(CComBSTR(strID));
+			if (hr == S_OK)
 			{
-				m_pTangramNodeCommonData->m_mapCLRNodes[strName] = this;
+				m_pDisp = pDisp.Detach();
 			}
-			else
+		}
+	}
+	break;
+	case CLRCtrl:
+	{
+		g_pTangram->m_pActiveNode = this;
+		auto it = m_pTangramNodeCommonData->m_mapCLRNodes.find(strName);
+		if (it == m_pTangramNodeCommonData->m_mapCLRNodes.end())
+		{
+			m_pTangramNodeCommonData->m_mapCLRNodes[strName] = this;
+		}
+		else
+		{
+			int nCount = m_pTangramNodeCommonData->m_mapCLRNodes.size();
+			CString str = _T("");
+			str.Format(_T("%s%d"), strName, nCount);
+			it = m_pTangramNodeCommonData->m_mapCLRNodes.find(str);
+			while (it != m_pTangramNodeCommonData->m_mapCLRNodes.end())
 			{
-				int nCount = m_pTangramNodeCommonData->m_mapCLRNodes.size();
-				CString str = _T("");
+				nCount++;
 				str.Format(_T("%s%d"), strName, nCount);
 				it = m_pTangramNodeCommonData->m_mapCLRNodes.find(str);
-				while (it != m_pTangramNodeCommonData->m_mapCLRNodes.end())
-				{
-					nCount++;
-					str.Format(_T("%s%d"), strName, nCount);
-					it = m_pTangramNodeCommonData->m_mapCLRNodes.find(str);
-				}
-				m_pTangramNodeCommonData->m_mapCLRNodes[str] = this;
-				put_Attribute(CComBSTR("name"), str.AllocSysString());
 			}
-			if (g_pTangram->m_pCLRProxy)
+			m_pTangramNodeCommonData->m_mapCLRNodes[str] = this;
+			put_Attribute(CComBSTR("name"), str.AllocSysString());
+		}
+		CString strUIKey = _T("");
+		if (g_pTangram->m_pCLRProxy)
+		{
+			ChromePlus::CHtmlWnd* pHtmlWnd = GetHtmlWnd();
+			if (pHtmlWnd)
 			{
-				m_pDisp = g_pTangram->m_pCLRProxy->TangramCreateObject(strTag.AllocSysString(), (long)hParentWnd, this);
-				CNodeWnd* pWnd = (CNodeWnd*)m_pHostWnd;
-				if (m_pDisp&&pWnd->m_mapDockCtrl.size())
+				g_pTangram->m_pCLRProxy->m_strCurrentWinFormTemplate = _T("");
+				CComBSTR bstrKey("");
+				get_Attribute(CComBSTR("uikey"), &bstrKey);
+				strUIKey = OLE2T(bstrKey);
+				auto it = pHtmlWnd->m_mapUserControlsInfo.find(strUIKey);
+				if(it != pHtmlWnd->m_mapUserControlsInfo.end())
 				{
-					HWND hPage = m_pTangramNodeCommonData->m_pPage->m_hWnd;
-					::SendMessage(hPage, WM_TANGRAMMSG, (WPARAM)m_pHostWnd, 1963);
+					g_pTangram->m_pCLRProxy->m_strCurrentWinFormTemplate = it->second;
 				}
-				if(m_pDisp==nullptr)
+				else
 				{
-					((CNodeWnd*)m_pHostWnd)->m_bCreateExternal = false;
-					m_nViewType = BlankView;
+					it = pHtmlWnd->m_mapFormsInfo.find(strUIKey);
+					if (it != pHtmlWnd->m_mapFormsInfo.end())
+						g_pTangram->m_pCLRProxy->m_strCurrentWinFormTemplate = it->second;
 				}
-				if (m_strID.CollateNoCase(_T("wpfctrl")) == 0)
-				{
-					pWnd->m_hFormWnd = g_pTangram->m_hFormNodeWnd;
-					g_pTangram->m_hFormNodeWnd = NULL;
-				}
+				//auto itX = pHtmlWnd->m_mapFormsInfo.find(strUIKey);
+				//if (itX != pHtmlWnd->m_mapFormsInfo.end())
+				//{
+				//	auto it2 = pHtmlWnd->m_mapChildFormsInfo.find(strUIKey);
+				//	if (it2 != pHtmlWnd->m_mapChildFormsInfo.end())
+				//		g_pTangram->m_pCurMDIChildFormInfo = it2->second;
+				//}
+			}
+			m_pDisp = g_pTangram->m_pCLRProxy->TangramCreateObject(strTag.AllocSysString(), hParentWnd, this);
+			if (pHtmlWnd&& strUIKey!=_T(""))
+			{
+
+			}
+			CNodeWnd* pWnd = (CNodeWnd*)m_pHostWnd;
+			if (m_pDisp && pWnd->m_mapDockCtrl.size())
+			{
+				HWND hPage = m_pTangramNodeCommonData->m_pPage->m_hWnd;
+				::SendMessage(hPage, WM_TANGRAMMSG, (WPARAM)m_pHostWnd, 1963);
+			}
+			if (m_pDisp == nullptr)
+			{
+				((CNodeWnd*)m_pHostWnd)->m_bCreateExternal = false;
+				m_nViewType = BlankView;
+			}
+			if (m_strID.CollateNoCase(_T("wpfctrl")) == 0)
+			{
+				pWnd->m_hFormWnd = g_pTangram->m_hFormNodeWnd;
+				g_pTangram->m_hFormNodeWnd = NULL;
 			}
 		}
-		break;
+	}
+	break;
 	}
 	if (m_pDisp)
 	{
@@ -1325,18 +1375,18 @@ HWND CWndNode::CreateView(HWND hParentWnd, CString strTag)
 	return 0;
 }
 
-STDMETHODIMP CWndNode::get_ChildNodes(IWndNodeCollection** pNodeColletion)
+STDMETHODIMP CWndNode::get_ChildNodes(IWndNodeCollection * *pNodeColletion)
 {
 	if (m_pChildNodeCollection == nullptr)
 	{
 		CComObject<CWndNodeCollection>::CreateInstance(&m_pChildNodeCollection);
-		m_pChildNodeCollection->AddRef();		
+		m_pChildNodeCollection->AddRef();
 		m_pChildNodeCollection->m_pNodes = &m_vChildNodes;
 	}
-	return m_pChildNodeCollection->QueryInterface(IID_IWndNodeCollection,(void**)pNodeColletion);
+	return m_pChildNodeCollection->QueryInterface(IID_IWndNodeCollection, (void**)pNodeColletion);
 }
 
-int CWndNode::_getNodes(CWndNode* pNode, CString& strName,CWndNode**ppRetNode, CWndNodeCollection* pNodes)
+int CWndNode::_getNodes(CWndNode * pNode, CString & strName, CWndNode * *ppRetNode, CWndNodeCollection * pNodes)
 {
 	int iCount = 0;
 	if (pNode->m_strName.CompareNoCase(strName) == 0)
@@ -1345,13 +1395,13 @@ int CWndNode::_getNodes(CWndNode* pNode, CString& strName,CWndNode**ppRetNode, C
 			pNodes->m_pNodes->push_back(pNode);
 
 		if (ppRetNode != nullptr && (*ppRetNode) == nullptr)
-			*ppRetNode = pNode;
+			* ppRetNode = pNode;
 		return 1;
 	}
 
-	for(auto it : pNode->m_vChildNodes)
+	for (auto it : pNode->m_vChildNodes)
 	{
-		iCount += _getNodes(it,strName,ppRetNode, pNodes);
+		iCount += _getNodes(it, strName, ppRetNode, pNodes);
 	}
 	return iCount;
 }
@@ -1361,9 +1411,9 @@ STDMETHODIMP CWndNode::Show()
 	CWndNode* pChild = this;
 	CWndNode* pParent = pChild->m_pParentObj;
 
-	while(pParent != nullptr)
+	while (pParent != nullptr)
 	{
-		pParent->m_pHostWnd->SendMessage(WM_ACTIVETABPAGE,(WPARAM)pChild->m_nCol,(LPARAM)1);
+		pParent->m_pHostWnd->SendMessage(WM_ACTIVETABPAGE, (WPARAM)pChild->m_nCol, (LPARAM)1);
 
 		pChild = pParent;
 		pParent = pChild->m_pParentObj;
@@ -1371,29 +1421,29 @@ STDMETHODIMP CWndNode::Show()
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_RootNode(IWndNode** ppNode)
+STDMETHODIMP CWndNode::get_RootNode(IWndNode * *ppNode)
 {
 	if (m_pRootObj != nullptr)
-		*ppNode = m_pRootObj;
+		* ppNode = m_pRootObj;
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_ParentNode(IWndNode** ppNode)
+STDMETHODIMP CWndNode::get_ParentNode(IWndNode * *ppNode)
 {
 	*ppNode = nullptr;
 	if (m_pParentObj != nullptr)
-		*ppNode = m_pParentObj;
+		* ppNode = m_pParentObj;
 
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_NodeType(ViewType* nType)
+STDMETHODIMP CWndNode::get_NodeType(ViewType * nType)
 {
 	*nType = m_nViewType;
 	return S_OK;
 }
 
-void CWndNode::_get_Objects(CWndNode* pNode, UINT32& nType, CWndNodeCollection* pNodeColletion)
+void CWndNode::_get_Objects(CWndNode * pNode, UINT32 & nType, CWndNodeCollection * pNodeColletion)
 {
 	if (pNode->m_nViewType & nType)
 	{
@@ -1401,23 +1451,23 @@ void CWndNode::_get_Objects(CWndNode* pNode, UINT32& nType, CWndNodeCollection* 
 	}
 
 	CWndNode* pChildNode = nullptr;
-	for(auto it : pNode->m_vChildNodes)
+	for (auto it : pNode->m_vChildNodes)
 	{
 		pChildNode = it;
-		_get_Objects(pChildNode,nType,pNodeColletion);
+		_get_Objects(pChildNode, nType, pNodeColletion);
 	}
 }
 
-STDMETHODIMP CWndNode::get_Objects(long nType, IWndNodeCollection** ppNodeColletion)
+STDMETHODIMP CWndNode::get_Objects(long nType, IWndNodeCollection * *ppNodeColletion)
 {
 	CComObject<CWndNodeCollection>* pNodes = nullptr;
 	CComObject<CWndNodeCollection>::CreateInstance(&pNodes);
 
-	pNodes->AddRef();	
+	pNodes->AddRef();
 
 	UINT32 u = nType;
-	_get_Objects(this,u,pNodes);
-	HRESULT hr = pNodes->QueryInterface(IID_IWndNodeCollection,(void**)ppNodeColletion);
+	_get_Objects(this, u, pNodes);
+	HRESULT hr = pNodes->QueryInterface(IID_IWndNodeCollection, (void**)ppNodeColletion);
 
 	pNodes->Release();
 
@@ -1448,7 +1498,7 @@ STDMETHODIMP CWndNode::get_Col(long* nCol)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::GetNode(long nRow, long nCol,IWndNode** ppTangramNode)
+STDMETHODIMP CWndNode::GetNode(long nRow, long nCol, IWndNode * *ppTangramNode)
 {
 	CWndNode* pRet = nullptr;
 	auto bFound = false;
@@ -1456,7 +1506,7 @@ STDMETHODIMP CWndNode::GetNode(long nRow, long nCol,IWndNode** ppTangramNode)
 	*ppTangramNode = nullptr;
 	if (nRow < 0 || nCol < 0 || nRow >= m_nRows || nCol >= m_nCols) return E_INVALIDARG;
 
-	for(auto it : m_vChildNodes)
+	for (auto it : m_vChildNodes)
 	{
 		pRet = it;
 		if (pRet->m_nCol == nCol && pRet->m_nRow == nRow)
@@ -1469,12 +1519,12 @@ STDMETHODIMP CWndNode::GetNode(long nRow, long nCol,IWndNode** ppTangramNode)
 	HRESULT hr = S_OK;
 	if (bFound)
 	{
-		hr = pRet->QueryInterface(IID_IWndNode,(void**)ppTangramNode);
+		hr = pRet->QueryInterface(IID_IWndNode, (void**)ppTangramNode);
 	}
 	return hr;
 }
 
-STDMETHODIMP CWndNode::GetNodeByName(BSTR bstrName, IWndNodeCollection** ppNodes)
+STDMETHODIMP CWndNode::GetNodeByName(BSTR bstrName, IWndNodeCollection * *ppNodes)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 
@@ -1501,7 +1551,7 @@ STDMETHODIMP CWndNode::GetNodeByName(BSTR bstrName, IWndNodeCollection** ppNodes
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::GetNodes(BSTR bstrName,IWndNode** ppNode,IWndNodeCollection** ppNodes,long* pCount)
+STDMETHODIMP CWndNode::GetNodes(BSTR bstrName, IWndNode * *ppNode, IWndNodeCollection * *ppNodes, long* pCount)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 
@@ -1510,9 +1560,9 @@ STDMETHODIMP CWndNode::GetNodes(BSTR bstrName,IWndNode** ppNode,IWndNodeCollecti
 	CWndNode* pRetNode = nullptr;
 
 	if (ppNode != nullptr)
-		*ppNode = nullptr;
+		* ppNode = nullptr;
 
-	CComObject<CWndNodeCollection>* pNodes = nullptr;
+	CComObject<CWndNodeCollection> * pNodes = nullptr;
 	if (ppNodes != nullptr)
 	{
 		*ppNodes = nullptr;
@@ -1520,15 +1570,15 @@ STDMETHODIMP CWndNode::GetNodes(BSTR bstrName,IWndNode** ppNode,IWndNodeCollecti
 		pNodes->AddRef();
 	}
 
-	int iCount = _getNodes(this,strName,&pRetNode,pNodes);
+	int iCount = _getNodes(this, strName, &pRetNode, pNodes);
 
 	*pCount = iCount;
 
 	if ((iCount > 0) && (ppNode != nullptr))
-		pRetNode->QueryInterface(IID_IWndNode,(void**)ppNode);	
+		pRetNode->QueryInterface(IID_IWndNode, (void**)ppNode);
 
 	if (ppNodes != nullptr)
-		pNodes->QueryInterface(IID_IWndNodeCollection,(void**)ppNodes);
+		pNodes->QueryInterface(IID_IWndNodeCollection, (void**)ppNodes);
 
 	if (pNodes != nullptr)
 		pNodes->Release();
@@ -1536,7 +1586,7 @@ STDMETHODIMP CWndNode::GetNodes(BSTR bstrName,IWndNode** ppNode,IWndNodeCollecti
 	return S_OK;
 }
 
-BOOL CWndNode::AddChildNode(CWndNode* pNode)
+BOOL CWndNode::AddChildNode(CWndNode * pNode)
 {
 	m_vChildNodes.push_back(pNode);
 	pNode->m_pParentObj = this;
@@ -1544,7 +1594,7 @@ BOOL CWndNode::AddChildNode(CWndNode* pNode)
 	return true;
 }
 
-BOOL CWndNode::RemoveChildNode(CWndNode* pNode)
+BOOL CWndNode::RemoveChildNode(CWndNode * pNode)
 {
 	auto it = find(m_vChildNodes.begin(), m_vChildNodes.end(), pNode);
 	if (it != m_vChildNodes.end())
@@ -1555,43 +1605,43 @@ BOOL CWndNode::RemoveChildNode(CWndNode* pNode)
 	return false;
 }
 
-STDMETHODIMP CWndNode::get_Frame(IWndFrame** pVal)
+STDMETHODIMP CWndNode::get_Frame(IWndFrame * *pVal)
 {
-	if(m_pTangramNodeCommonData->m_pFrame)
-		*pVal = m_pTangramNodeCommonData->m_pFrame;
+	if (m_pTangramNodeCommonData->m_pFrame)
+		* pVal = m_pTangramNodeCommonData->m_pFrame;
 
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_HostFrame(IWndFrame** pVal)
+STDMETHODIMP CWndNode::get_HostFrame(IWndFrame * *pVal)
 {
-	if(m_pHostFrame)
-		*pVal = m_pHostFrame;
+	if (m_pHostFrame)
+		* pVal = m_pHostFrame;
 
 	return S_OK;
 }
 
 STDMETHODIMP CWndNode::Refresh(void)
 {
-	if(m_pDisp)
+	if (m_pDisp)
 	{
 		CComQIPtr<IWebBrowser2> pWebCtrl(m_pDisp);
-		if(pWebCtrl)
+		if (pWebCtrl)
 			pWebCtrl->Refresh();
 	}
 
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_Height(LONG* pVal)
+STDMETHODIMP CWndNode::get_Height(LONG * pVal)
 {
 	RECT rc;
-	::GetClientRect(m_pHostWnd->m_hWnd,&rc);
+	::GetClientRect(m_pHostWnd->m_hWnd, &rc);
 	*pVal = rc.bottom;
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_Width(LONG* pVal)
+STDMETHODIMP CWndNode::get_Width(LONG * pVal)
 {
 	RECT rc;
 	::GetClientRect(m_pHostWnd->m_hWnd, &rc);
@@ -1600,29 +1650,29 @@ STDMETHODIMP CWndNode::get_Width(LONG* pVal)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_OfficeObj(IDispatch** pVal)
+STDMETHODIMP CWndNode::get_OfficeObj(IDispatch * *pVal)
 {
 	if (m_pTangramNodeCommonData->m_pOfficeObj)
 	{
 		*pVal = m_pTangramNodeCommonData->m_pOfficeObj;
-		(* pVal)->AddRef();
+		(*pVal)->AddRef();
 	}
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_Extender(IDispatch** pVal)
+STDMETHODIMP CWndNode::get_Extender(IDispatch * *pVal)
 {
-	if(m_pExtender)
+	if (m_pExtender)
 	{
-		* pVal = m_pExtender;
-		(* pVal)->AddRef();
+		*pVal = m_pExtender;
+		(*pVal)->AddRef();
 	}
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::put_Extender(IDispatch* newVal)
+STDMETHODIMP CWndNode::put_Extender(IDispatch * newVal)
 {
-	if(m_pExtender)
+	if (m_pExtender)
 		m_pExtender->Release();
 	m_pExtender = newVal;
 	m_pExtender->AddRef();
@@ -1630,11 +1680,11 @@ STDMETHODIMP CWndNode::put_Extender(IDispatch* newVal)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_VSDocument(IVSDocument** pVal)
+STDMETHODIMP CWndNode::get_VSDocument(IVSDocument * *pVal)
 {
-	if(m_pVSDocument)
+	if (m_pVSDocument)
 	{
-		* pVal = m_pVSDocument;
+		*pVal = m_pVSDocument;
 	}
 	return S_OK;
 }
@@ -1645,15 +1695,15 @@ STDMETHODIMP CWndNode::get_VSDocument(IVSDocument** pVal)
 //	return S_OK;
 //}
 
-STDMETHODIMP CWndNode::get_WndPage(IWndPage** pVal)
+STDMETHODIMP CWndNode::get_WndPage(IWndPage * *pVal)
 {
 	*pVal = (IWndPage*)m_pTangramNodeCommonData->m_pFrame->m_pPage;
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_HTMLWindow(IDispatch** pVal)
+STDMETHODIMP CWndNode::get_HTMLWindow(IDispatch * *pVal)
 {
-	if (m_pTangramNodeWBEvent&&m_pTangramNodeWBEvent->m_pHTMLDocument2)
+	if (m_pTangramNodeWBEvent && m_pTangramNodeWBEvent->m_pHTMLDocument2)
 	{
 		CComPtr<IHTMLWindow2> pHTMLWindow2;
 		m_pTangramNodeWBEvent->m_pHTMLDocument2->get_parentWindow(&pHTMLWindow2);
@@ -1663,9 +1713,9 @@ STDMETHODIMP CWndNode::get_HTMLWindow(IDispatch** pVal)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_HtmlDocument(IDispatch** pVal)
+STDMETHODIMP CWndNode::get_HtmlDocument(IDispatch * *pVal)
 {
-	if (m_pTangramNodeWBEvent&&m_pTangramNodeWBEvent->m_pHTMLDocument2)
+	if (m_pTangramNodeWBEvent && m_pTangramNodeWBEvent->m_pHTMLDocument2)
 	{
 		*pVal = m_pTangramNodeWBEvent->m_pHTMLDocument2;
 		(*pVal)->AddRef();
@@ -1674,23 +1724,23 @@ STDMETHODIMP CWndNode::get_HtmlDocument(IDispatch** pVal)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_NameAtWindowPage(BSTR* pVal)
+STDMETHODIMP CWndNode::get_NameAtWindowPage(BSTR * pVal)
 {
 	*pVal = m_strNodeName.AllocSysString();
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::GetCtrlByName(BSTR bstrName, VARIANT_BOOL bFindInChild, IDispatch** ppRetDisp)
+STDMETHODIMP CWndNode::GetCtrlByName(BSTR bstrName, VARIANT_BOOL bFindInChild, IDispatch * *ppRetDisp)
 {
-	if (g_pTangram->m_pCLRProxy&&m_nViewType==CLRCtrl&&m_pDisp)
-		*ppRetDisp=g_pTangram->m_pCLRProxy->GetCtrlByName(m_pDisp, bstrName, bFindInChild?true:false);
+	if (g_pTangram->m_pCLRProxy && m_nViewType == CLRCtrl && m_pDisp)
+		* ppRetDisp = g_pTangram->m_pCLRProxy->GetCtrlByName(m_pDisp, bstrName, bFindInChild ? true : false);
 
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::GetCtrlValueByName(BSTR bstrName, VARIANT_BOOL bFindInChild, BSTR* bstrVal)
+STDMETHODIMP CWndNode::GetCtrlValueByName(BSTR bstrName, VARIANT_BOOL bFindInChild, BSTR * bstrVal)
 {
-	if (g_pTangram->m_pCLRProxy&&m_nViewType==CLRCtrl&&m_pDisp)
+	if (g_pTangram->m_pCLRProxy && m_nViewType == CLRCtrl && m_pDisp)
 	{
 		*bstrVal = g_pTangram->m_pCLRProxy->GetCtrlValueByName(m_pDisp, bstrName, bFindInChild ? true : false);
 	}
@@ -1699,7 +1749,7 @@ STDMETHODIMP CWndNode::GetCtrlValueByName(BSTR bstrName, VARIANT_BOOL bFindInChi
 
 STDMETHODIMP CWndNode::SetCtrlValueByName(BSTR bstrName, VARIANT_BOOL bFindInChild, BSTR bstrVal)
 {
-	if (g_pTangram->m_pCLRProxy&&m_nViewType==CLRCtrl&&m_pDisp)
+	if (g_pTangram->m_pCLRProxy && m_nViewType == CLRCtrl && m_pDisp)
 	{
 		g_pTangram->m_pCLRProxy->SetCtrlValueByName(m_pDisp, bstrName, bFindInChild ? true : false, bstrVal);
 	}
@@ -1728,16 +1778,16 @@ STDMETHODIMP CWndNodeCollection::get_NodeCount(long* pCount)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNodeCollection::get_Item(long iIndex, IWndNode **ppNode)
+STDMETHODIMP CWndNodeCollection::get_Item(long iIndex, IWndNode * *ppNode)
 {
 	if (iIndex < 0 || iIndex >= (int)m_pNodes->size()) return E_INVALIDARG;
 
-	CWndNode* pNode = m_pNodes->operator [](iIndex);
+	CWndNode * pNode = m_pNodes->operator [](iIndex);
 
 	return pNode->QueryInterface(IID_IWndNode, (void**)ppNode);
 }
 
-STDMETHODIMP CWndNodeCollection::get__NewEnum(IUnknown** ppVal)
+STDMETHODIMP CWndNodeCollection::get__NewEnum(IUnknown * *ppVal)
 {
 	*ppVal = nullptr;
 
@@ -1747,17 +1797,17 @@ STDMETHODIMP CWndNodeCollection::get__NewEnum(IUnknown** ppVal)
 		{
 			CWndNode* pNode = *p2;
 			p1->vt = VT_UNKNOWN;
-			return pNode->QueryInterface(IID_IUnknown, (void**)&(p1->punkVal));
+			return pNode->QueryInterface(IID_IUnknown, (void**) & (p1->punkVal));
 		}
 
-		static void init(VARIANT* p)	{ VariantInit(p); }
-		static void destroy(VARIANT* p)	{ VariantClear(p); }
+		static void init(VARIANT* p) { VariantInit(p); }
+		static void destroy(VARIANT* p) { VariantClear(p); }
 	};
 
-	typedef CComEnumOnSTL<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT, _CopyVariantFromIUnkown, CTangramNodeVector>
+	typedef CComEnumOnSTL<IEnumVARIANT, & IID_IEnumVARIANT, VARIANT, _CopyVariantFromIUnkown, CTangramNodeVector>
 		CComEnumVariantOnVector;
 
-	CComObject<CComEnumVariantOnVector> *pe = 0;
+	CComObject<CComEnumVariantOnVector>* pe = 0;
 	HRESULT hr = CComObject<CComEnumVariantOnVector>::CreateInstance(&pe);
 
 	if (SUCCEEDED(hr))
@@ -1774,7 +1824,7 @@ STDMETHODIMP CWndNodeCollection::get__NewEnum(IUnknown** ppVal)
 	return hr;
 }
 
-STDMETHODIMP CWndNode::get_DocXml(BSTR* pVal)
+STDMETHODIMP CWndNode::get_DocXml(BSTR * pVal)
 {
 	g_pTangram->UpdateWndNode(m_pRootObj);
 	CString strXml = m_pTangramNodeCommonData->m_pTangramParse->xml();
@@ -1786,7 +1836,7 @@ STDMETHODIMP CWndNode::get_DocXml(BSTR* pVal)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_rgbMiddle(OLE_COLOR* pVal)
+STDMETHODIMP CWndNode::get_rgbMiddle(OLE_COLOR * pVal)
 {
 	if (m_nViewType == Splitter)
 	{
@@ -1795,7 +1845,7 @@ STDMETHODIMP CWndNode::get_rgbMiddle(OLE_COLOR* pVal)
 	}
 	else
 	{
-		*pVal = OLE_COLOR(RGB(240,240,240));
+		*pVal = OLE_COLOR(RGB(240, 240, 240));
 	}
 	return S_OK;
 }
@@ -1806,9 +1856,9 @@ STDMETHODIMP CWndNode::put_rgbMiddle(OLE_COLOR newVal)
 	{
 		CSplitterNodeWnd* pSplitter = (CSplitterNodeWnd*)m_pHostWnd;
 		OleTranslateColor(newVal, NULL, &pSplitter->rgbMiddle);
-		BYTE Red = GetRValue(pSplitter->rgbMiddle); 
-		BYTE Green = GetGValue(pSplitter->rgbMiddle); 
-		BYTE Blue = GetBValue(pSplitter->rgbMiddle); 
+		BYTE Red = GetRValue(pSplitter->rgbMiddle);
+		BYTE Green = GetGValue(pSplitter->rgbMiddle);
+		BYTE Blue = GetBValue(pSplitter->rgbMiddle);
 		CString strRGB = _T("");
 		strRGB.Format(_T("RGB(%d,%d,%d)"), Red, Green, Blue);
 		put_Attribute(CComBSTR(L"middlecolor"), strRGB.AllocSysString());
@@ -1817,7 +1867,7 @@ STDMETHODIMP CWndNode::put_rgbMiddle(OLE_COLOR newVal)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_rgbLeftTop(OLE_COLOR* pVal)
+STDMETHODIMP CWndNode::get_rgbLeftTop(OLE_COLOR * pVal)
 {
 	if (m_nViewType == Splitter)
 	{
@@ -1845,7 +1895,7 @@ STDMETHODIMP CWndNode::put_rgbLeftTop(OLE_COLOR newVal)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_rgbRightBottom(OLE_COLOR* pVal)
+STDMETHODIMP CWndNode::get_rgbRightBottom(OLE_COLOR * pVal)
 {
 	if (m_nViewType == Splitter)
 	{
@@ -1854,7 +1904,7 @@ STDMETHODIMP CWndNode::get_rgbRightBottom(OLE_COLOR* pVal)
 	}
 	else
 		*pVal = OLE_COLOR(RGB(240, 240, 240));
-	
+
 	return S_OK;
 }
 
@@ -1914,7 +1964,7 @@ STDMETHODIMP CWndNode::put_Hmax(int newVal)
 	if (m_nViewType == Splitter)
 	{
 		CSplitterNodeWnd* pSplitter = (CSplitterNodeWnd*)m_pHostWnd;
-		pSplitter->m_Hmax = max(pSplitter->m_Hmin,newVal);
+		pSplitter->m_Hmax = max(pSplitter->m_Hmin, newVal);
 		CString strVal = _T("");
 		strVal.Format(_T("%d"), pSplitter->m_Hmax);
 		put_Attribute(CComBSTR(L"hmax"), strVal.AllocSysString());
@@ -1974,16 +2024,16 @@ STDMETHODIMP CWndNode::put_Vmax(int newVal)
 }
 
 
-STDMETHODIMP CWndNode::get_HostNode(IWndNode** pVal)
+STDMETHODIMP CWndNode::get_HostNode(IWndNode * *pVal)
 {
 	if (m_pTangramNodeCommonData->m_pHostClientView)
-		*pVal = m_pTangramNodeCommonData->m_pHostClientView->m_pWndNode;
+		* pVal = m_pTangramNodeCommonData->m_pHostClientView->m_pWndNode;
 
 	return S_OK;
 }
 
 
-STDMETHODIMP CWndNode::put_HostNode(IWndNode* newVal)
+STDMETHODIMP CWndNode::put_HostNode(IWndNode * newVal)
 {
 	return S_OK;
 }
@@ -2033,7 +2083,7 @@ HRESULT CWndNode::Fire_ExtendComplete()
 			CComPtr<IUnknown> punkConnection = m_vec.GetAt(iConnection);
 			g_pTangram->Unlock();
 
-			IDispatch * pConnection = static_cast<IDispatch *>(punkConnection.p);
+			IDispatch* pConnection = static_cast<IDispatch*>(punkConnection.p);
 
 			if (pConnection)
 			{
@@ -2053,7 +2103,7 @@ HRESULT CWndNode::Fire_ExtendComplete()
 
 HRESULT CWndNode::Fire_Destroy()
 {
-	if(m_pRootObj==this)
+	if (m_pRootObj == this)
 	{
 		if (m_pTangramNodeCommonData->m_pFrame->m_pPage)
 		{
@@ -2085,7 +2135,7 @@ HRESULT CWndNode::Fire_Destroy()
 								{
 									pTangramPageParse = m_pTangramPageParse->AddNode(m_pTangramNodeCommonData->m_pPage->m_strConfigFileNodeName);
 								}
-								if(pTangramPageParse)
+								if (pTangramPageParse)
 								{
 									CString strFrameName = m_pTangramNodeCommonData->m_pFrame->m_strFrameName;
 
@@ -2097,7 +2147,7 @@ HRESULT CWndNode::Fire_Destroy()
 										CComQIPtr<IWndContainer> pContainer(m_pDisp);
 										if (pContainer)
 										{
-											if (m_nActivePage >0)
+											if (m_nActivePage > 0)
 											{
 												CString strVal = _T("");
 												strVal.Format(_T("%d"), m_nActivePage);
@@ -2117,7 +2167,7 @@ HRESULT CWndNode::Fire_Destroy()
 										CTangramXmlParse* pParse = pTangramFrameParse->GetChild(m_strKey);
 										if (pParse)
 											pTangramFrameParse->RemoveNode(m_strKey);
-									
+
 										strXml = m_pTangramNodeCommonData->m_pTangramParse->xml();
 										CString _strName = m_pTangramNodeCommonData->m_pTangramParse->name();
 										if (_strName != m_strKey)
@@ -2142,7 +2192,7 @@ HRESULT CWndNode::Fire_Destroy()
 							}
 						}
 					}
-					if (strXml!=_T(""))
+					if (strXml != _T(""))
 					{
 						CTangramXmlParse m_Parse;
 						if (m_Parse.LoadFile(strFile))
@@ -2190,7 +2240,7 @@ HRESULT CWndNode::Fire_Destroy()
 			CComPtr<IUnknown> punkConnection = m_vec.GetAt(iConnection);
 			g_pTangram->Unlock();
 
-			IDispatch * pConnection = static_cast<IDispatch *>(punkConnection.p);
+			IDispatch* pConnection = static_cast<IDispatch*>(punkConnection.p);
 
 			if (pConnection)
 			{
@@ -2232,7 +2282,7 @@ HRESULT CWndNode::Fire_NodeAddInCreated(IDispatch * pAddIndisp, BSTR bstrAddInID
 			CComPtr<IUnknown> punkConnection = m_vec.GetAt(iConnection);
 			g_pTangram->Unlock();
 
-			IDispatch * pConnection = static_cast<IDispatch *>(punkConnection.p);
+			IDispatch* pConnection = static_cast<IDispatch*>(punkConnection.p);
 
 			if (pConnection)
 			{
@@ -2263,7 +2313,7 @@ HRESULT CWndNode::Fire_NodeAddInsCreated()
 			CComPtr<IUnknown> punkConnection = m_vec.GetAt(iConnection);
 			g_pTangram->Unlock();
 
-			IDispatch * pConnection = static_cast<IDispatch *>(punkConnection.p);
+			IDispatch* pConnection = static_cast<IDispatch*>(punkConnection.p);
 
 			if (pConnection)
 			{
@@ -2297,7 +2347,7 @@ HRESULT CWndNode::Fire_NodeDocumentComplete(IDispatch * ExtenderDisp, BSTR bstrU
 			CComPtr<IUnknown> punkConnection = m_vec.GetAt(iConnection);
 			g_pTangram->Unlock();
 
-			IDispatch * pConnection = static_cast<IDispatch *>(punkConnection.p);
+			IDispatch* pConnection = static_cast<IDispatch*>(punkConnection.p);
 
 			if (pConnection)
 			{
@@ -2339,7 +2389,7 @@ HRESULT CWndNode::Fire_ControlNotify(IWndNode * sender, LONG NotifyCode, LONG Ct
 			CComPtr<IUnknown> punkConnection = m_vec.GetAt(iConnection);
 			g_pTangram->Unlock();
 
-			IDispatch * pConnection = static_cast<IDispatch *>(punkConnection.p);
+			IDispatch* pConnection = static_cast<IDispatch*>(punkConnection.p);
 
 			if (pConnection)
 			{
@@ -2349,7 +2399,7 @@ HRESULT CWndNode::Fire_ControlNotify(IWndNode * sender, LONG NotifyCode, LONG Ct
 		}
 	}
 
-	if (g_pTangram->m_bEclipse&&m_pTangramNodeCommonData->m_pPage&&m_pTangramNodeCommonData->m_pPage->m_mapNotifyCtrl.size())
+	if (g_pTangram->m_bEclipse && m_pTangramNodeCommonData->m_pPage && m_pTangramNodeCommonData->m_pPage->m_mapNotifyCtrl.size())
 	{
 		map<HWND, CEclipseCtrl*> m_mapTemp;
 		for (auto it : m_pTangramNodeCommonData->m_pPage->m_mapNotifyCtrl)
@@ -2391,7 +2441,7 @@ HRESULT CWndNode::Fire_TabChange(LONG ActivePage, LONG OldPage)
 			g_pTangram->Lock();
 			IUnknown* punkConnection = m_vec.GetAt(iConnection);
 			g_pTangram->Unlock();
-			IDispatch * pConnection = static_cast<IDispatch *>(punkConnection);
+			IDispatch* pConnection = static_cast<IDispatch*>(punkConnection);
 
 			if (pConnection)
 			{
@@ -2424,7 +2474,7 @@ HRESULT CWndNode::Fire_IPCMsg(BSTR bstrXml, BSTR bstrData)
 			g_pTangram->Lock();
 			IUnknown* punkConnection = m_vec.GetAt(iConnection);
 			g_pTangram->Unlock();
-			IDispatch * pConnection = static_cast<IDispatch *>(punkConnection);
+			IDispatch* pConnection = static_cast<IDispatch*>(punkConnection);
 
 			if (pConnection)
 			{
@@ -2442,7 +2492,7 @@ HRESULT CWndNode::Fire_IPCMsg(BSTR bstrXml, BSTR bstrData)
 
 STDMETHODIMP CWndNode::put_SaveToConfigFile(VARIANT_BOOL newVal)
 {
-	if (m_pRootObj==this)
+	if (m_pRootObj == this)
 	{
 		CString strKey = m_strKey + _T("@") + m_pTangramNodeCommonData->m_pFrame->m_strFrameName + _T("@") + m_pTangramNodeCommonData->m_pFrame->m_pPage->m_strConfigFileNodeName;
 		auto it = m_pTangramNodeCommonData->m_pFrame->m_mapNeedSaveToConfigNode.find(m_strKey);
@@ -2475,7 +2525,7 @@ STDMETHODIMP CWndNode::put_SaveToConfigFile(VARIANT_BOOL newVal)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_DockObj(BSTR bstrName, LONGLONG* pVal)
+STDMETHODIMP CWndNode::get_DockObj(BSTR bstrName, LONGLONG * pVal)
 {
 	CString strName = OLE2T(bstrName);
 	if (m_nViewType == CLRCtrl)
@@ -2493,7 +2543,7 @@ STDMETHODIMP CWndNode::get_DockObj(BSTR bstrName, LONGLONG* pVal)
 STDMETHODIMP CWndNode::put_DockObj(BSTR bstrName, LONGLONG newVal)
 {
 	CString strName = OLE2T(bstrName);
-	if (/*m_nViewType == CLRCtrl&&*/::IsWindow((HWND)newVal)&&strName!=_T(""))
+	if (/*m_nViewType == CLRCtrl&&*/::IsWindow((HWND)newVal) && strName != _T(""))
 	{
 		CNodeWnd* pWnd = (CNodeWnd*)m_pHostWnd;
 		auto it = pWnd->m_mapDockCtrl.find(strName);
@@ -2505,7 +2555,7 @@ STDMETHODIMP CWndNode::put_DockObj(BSTR bstrName, LONGLONG newVal)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::NavigateURL(BSTR bstrURL, IDispatch* dispObjforScript)
+STDMETHODIMP CWndNode::NavigateURL(BSTR bstrURL, IDispatch * dispObjforScript)
 {
 	if (g_pTangram->m_pCreatorImpl == nullptr)
 		return S_OK;
@@ -2534,7 +2584,7 @@ STDMETHODIMP CWndNode::NavigateURL(BSTR bstrURL, IDispatch* dispObjforScript)
 	return S_OK;
 }
 
-STDMETHODIMP CWndNode::get_URL(BSTR* pVal)
+STDMETHODIMP CWndNode::get_URL(BSTR * pVal)
 {
 	if (m_pHostParse != nullptr)
 	{

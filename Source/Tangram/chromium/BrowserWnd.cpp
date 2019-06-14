@@ -65,10 +65,10 @@ namespace ChromePlus {
 		if (m_pVisibleWebWnd&&!::IsWindow(m_pVisibleWebWnd->m_hWnd))
 			return 0;
 		if (m_pVisibleWebWnd) {
-			if (m_hDrawWnd == 0) {
+			if (::IsWindow(m_hDrawWnd) == false) {
 				m_hDrawWnd = ::FindWindowEx(m_hWnd, nullptr, _T("Intermediate D3D Window"), nullptr);
 			}
-			if (m_hDrawWnd == 0) {
+			if (::IsWindow(m_hDrawWnd) == false) {
 				m_hDrawWnd = ::FindWindowEx(m_hWnd, nullptr, _T("Intermediate Software Window"), nullptr);
 			}
 
@@ -155,10 +155,6 @@ namespace ChromePlus {
 		{
 			m_Rect.left = rc.left;
 			m_Rect.top = nTopFix * m_fdevice_scale_factor;
-			//if (::GetWindowLongPtr(m_hWnd, GWL_STYLE)&WS_CHILD)
-			//{
-			//	m_Rect.top -= nTopFix * m_fdevice_scale_factor;
-			//}
 			m_Rect.right = rc.left + rc.right * m_fdevice_scale_factor;
 			m_Rect.bottom = (nTopFix + rc.bottom - rc.top) * m_fdevice_scale_factor;
 			HWND hExtendWnd = m_pVisibleWebWnd->m_hExtendWnd;

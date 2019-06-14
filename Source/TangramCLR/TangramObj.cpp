@@ -462,15 +462,15 @@ namespace TangramCLR
 		OnCloudAppIdle();
 	}
 
-	void Tangram::Fire_OnCloudAppInit()
-	{
-		OnCloudAppInit();
-	}
+	//void Tangram::Fire_OnCloudAppInit()
+	//{
+	//	OnCloudAppInit();
+	//}
 
-	IntPtr Tangram::Fire_OnInitTangramApp()
-	{
-		return OnInitTangramApp();
-	}
+	//IntPtr Tangram::Fire_OnInitTangramApp()
+	//{
+	//	return OnInitTangramApp();
+	//}
 
 	String^ Tangram::Fire_OnGetTangramNtpXml(String^ strKey)
 	{

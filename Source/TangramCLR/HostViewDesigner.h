@@ -97,9 +97,9 @@ namespace TangramDesigner {
 				| System::Windows::Forms::AnchorStyles::Right));
 			this->btnPrevatChrome->Location = System::Drawing::Point(12, 60);
 			this->btnPrevatChrome->Name = L"btnPrevatChrome";
-			this->btnPrevatChrome->Size = System::Drawing::Size(440, 62);
+			this->btnPrevatChrome->Size = System::Drawing::Size(440, 29);
 			this->btnPrevatChrome->TabIndex = 0;
-			this->btnPrevatChrome->Text = L"Preview with Tangram WebBrowser";
+			this->btnPrevatChrome->Text = L"New TangramWebPage";
 			this->btnPrevatChrome->UseVisualStyleBackColor = true;
 			this->btnPrevatChrome->Click += gcnew System::EventHandler(this, &HostViewDesigner::btnPrevatChrome_Click);
 			// 

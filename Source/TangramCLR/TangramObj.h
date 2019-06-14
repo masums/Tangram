@@ -1118,13 +1118,13 @@ namespace TangramCLR
 		static event CloudAppIdle^ OnCloudAppIdle;
 		static void Fire_OnCloudAppIdle();
 
-		delegate void CloudAppInit();
-		static event CloudAppInit^ OnCloudAppInit;
-		static void Fire_OnCloudAppInit();
+		//delegate void CloudAppInit();
+		//static event CloudAppInit^ OnCloudAppInit;
+		//static void Fire_OnCloudAppInit();
 
-		delegate IntPtr InitTangramApp();
-		static event InitTangramApp^ OnInitTangramApp;
-		static IntPtr Fire_OnInitTangramApp();
+		//delegate IntPtr InitTangramApp();
+		//static event InitTangramApp^ OnInitTangramApp;
+		//static IntPtr Fire_OnInitTangramApp();
 
 		delegate String^ GetTangramNtpXml(String^ strKey);
 		static event GetTangramNtpXml^ OnGetTangramNtpXml;

@@ -32,17 +32,6 @@
 using namespace ChromePlus;
 using namespace TangramCommon;
 
-class CHelperWnd;
-class CEclipseWnd;
-class CTangramDocWnd;
-class CTangramAppCtrl;
-class CTangramEventObj;
-class CTangramDocFrame;
-class CTangramMDIMainWnd;
-class CTangramCommonCtrl;
-class CTangramHtmlTreeWnd;
-class CTangramAFXHelperWnd;
-
 struct TangramThreadInfo
 {
 	HHOOK						m_hGetMessageHook;
@@ -503,4 +492,5 @@ private:
 	void OnSubBrowserWndCreated(HWND hParent, HWND hBrowser);
 	CString GetProcessPath(const char* _ver, CString process_type);
 	CString GetSchemeBaseName();
+	HICON GetAppIcon(int nIndex);
 };

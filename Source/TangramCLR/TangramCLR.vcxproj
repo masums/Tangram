@@ -376,6 +376,7 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(windir)\Microsoft.NET\assembly\GAC_64\
     <ClCompile Include="TabWndDesigner.cpp" />
     <ClCompile Include="TangramCLRHost.cpp" />
     <ClCompile Include="TangramClrProxy.cpp" />
+    <ClCompile Include="TangramNewChildForm.cpp" />
     <ClCompile Include="TangramNodeCLREvent.cpp" />
     <ClCompile Include="TangramObj.cpp" />
     <ClCompile Include="TangramProxy.cpp" />
@@ -422,6 +423,7 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(windir)\Microsoft.NET\assembly\GAC_64\
     <ClInclude Include="TangramMDIForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="TangramNewChildForm.h" />
     <ClInclude Include="TangramNodeCLREvent.h" />
     <ClInclude Include="TangramObj.h" />
     <ClInclude Include="TangramProxy.h" />
@@ -467,6 +469,7 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(windir)\Microsoft.NET\assembly\GAC_64\
     <EmbeddedResource Include="TangramMDIForm.resx">
       <DependentUpon>TangramMDIForm.h</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="TangramNewChildForm.resx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

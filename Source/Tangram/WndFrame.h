@@ -24,13 +24,6 @@
 
 using namespace ChromePlus;
 
-class CWndFrame;
-class CWPFView;
-class CTangramDoc;
-class CEclipseWnd;
-class CTangramDocFrame;
-class CTangramEventObj;
-class CTangramHtmlTreeWnd;
 #define WM_TANGRAMNOTIFY WM_NOTIFY+WM_REFLECT_BASE
 class CTangramCommonCtrl :
 	public CWindowImpl<CTangramCommonCtrl, CWindow>
@@ -151,6 +144,8 @@ public:
 	CString	m_strXml;
 	CString m_strPath;
 	CString m_strChildFormPath;
+	
+	CMDIChildFormInfo*		m_pChildFormsInfo;
 
 	map<CString, CString> m_mapKey;
 	map<CString, TangramDocTemplateInfo*>	m_mapTangramFormsTemplateInfo;
@@ -158,6 +153,7 @@ public:
 	BEGIN_MSG_MAP(CTangramWinFormWnd)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+		MESSAGE_HANDLER(WM_TANGRAMMSG, OnTangramMsg)
 		MESSAGE_HANDLER(WM_TANGRAMDATA, OnGetMe)
 		MESSAGE_HANDLER(WM_WINFORMCREATED, OnFormCreated)
 		MESSAGE_HANDLER(WM_TANGRAMGETXML, OnTangramGetXml)
@@ -170,6 +166,7 @@ private:
 	LRESULT OnGetMe(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL&);
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& );
 	LRESULT OnFormCreated(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& );
+	LRESULT OnTangramMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL&);
 	LRESULT OnTangramGetXml(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL&);
 };
 
@@ -228,12 +225,12 @@ public:
 	HWND									m_hPWnd;
 	HWND									m_hHostWnd;
 
+	CString									m_strLastKey;
 	CString									m_strAsynKeys;
 	CString									m_strFrameName;	
 	CString									m_strCurrentKey;
-	CString									m_strLastKey;
-	CTangramDocTemplate*					m_pTangramDocTemplate;
 	CEclipseWnd*							m_pWorkBenchFrame;
+	CTangramDocTemplate*					m_pTangramDocTemplate;
 	map<CTangramAppProxy*, CTangramWndFrameProxy*> m_mapWndFrameProxy;
 
 	ChromePlus::CHtmlWnd*					m_pWebWnd;

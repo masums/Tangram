@@ -62,8 +62,6 @@ public:
 	void OnFinalMessage(HWND hWnd);
 };
 
-class CTangram;
-class CTangramEventObj;
 class CTangramApp :
 	public CWinApp,
 	public CComObjectRootBase,

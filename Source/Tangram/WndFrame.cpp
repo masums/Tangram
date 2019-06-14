@@ -1078,6 +1078,21 @@ CTangramWinFormWnd::CTangramWinFormWnd(void)
 	m_nState = -1;
 	m_bMdiForm = false;
 	m_strChildFormPath = m_strXml = m_strKey = _T("");
+	if (g_pTangram->m_pCurMDIChildFormInfo)
+	{
+		m_pChildFormsInfo = new CMDIChildFormInfo();
+		if (g_pTangram->m_pActiveNode)
+			g_pTangram->m_pActiveNode->m_pChildFormsInfo = m_pChildFormsInfo;
+		for (auto it : g_pTangram->m_pCurMDIChildFormInfo->m_mapFormsInfo)
+		{
+			m_pChildFormsInfo->m_mapFormsInfo[it.first] = it.second;
+		}
+		g_pTangram->m_pCurMDIChildFormInfo = nullptr;
+	}
+	else
+	{
+		m_pChildFormsInfo = nullptr;
+	}
 }
 
 CTangramWinFormWnd::~CTangramWinFormWnd(void)
@@ -1090,6 +1105,8 @@ CTangramWinFormWnd::~CTangramWinFormWnd(void)
 		}
 		m_mapTangramFormsTemplateInfo.clear();
 	}
+	if (m_pChildFormsInfo)
+		delete m_pChildFormsInfo;
 }
 
 LRESULT CTangramWinFormWnd::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
@@ -1240,6 +1257,14 @@ LRESULT CTangramWinFormWnd::OnGetMe(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 		{
 			m_strPath = m_strXml;
 		}
+		else
+		{
+			CTangramXmlParse m_Parse;
+			if (m_Parse.LoadXml(m_strXml))
+			{
+				m_strKey = m_Parse.name();
+			}
+		}
 	}
 	break;
 	case 4:
@@ -1263,6 +1288,36 @@ LRESULT CTangramWinFormWnd::OnGetMe(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	case 20190214:
 		return (LRESULT)this;
 		break;
+	}
+	return DefWindowProc(uMsg, wParam, lParam);
+}
+
+LRESULT CTangramWinFormWnd::OnTangramMsg(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&)
+{
+	switch (lParam)
+	{
+	case 20190601:
+	{
+		if (m_strKey == _T(""))
+		{
+			CTangramXmlParse m_Parse;
+			if (m_Parse.LoadXml(m_strXml))
+			{
+				m_strKey = m_Parse.name();
+			}
+		}
+		CTangramXmlParse* pChild = (CTangramXmlParse*)wParam;
+		if (pChild)
+		{
+			int nCount = pChild->GetCount();
+		}
+	}
+	break;
+	case 20190602:
+	{
+		return (LRESULT)m_pChildFormsInfo;
+	}
+	break;
 	}
 	return DefWindowProc(uMsg, wParam, lParam);
 }
@@ -1859,7 +1914,7 @@ void CWndFrame::HostPosChanged()
 		rt1.top,
 		rt1.right - rt1.left,
 		rt1.bottom - rt1.top,
-		SWP_FRAMECHANGED | SWP_NOACTIVATE
+		SWP_FRAMECHANGED | SWP_NOACTIVATE|SWP_SHOWWINDOW
 	);
 	EndDeferWindowPos(dwh);
 	UpdateVisualWPFMap(::GetParent(m_hWnd), false);
@@ -2436,6 +2491,7 @@ STDMETHODIMP CWndFrame::Extend(BSTR bstrKey, BSTR bstrXml, IWndNode** ppRetNode)
 		//}
 	}
 	m_pBindingNode = m_pWorkNode->m_pTangramNodeCommonData->m_pHostClientView ? m_pWorkNode->m_pTangramNodeCommonData->m_pHostClientView->m_pWndNode : nullptr;
+		//m_pBindingNode->put_Attribute(CComBSTR(L"id"), CComBSTR(L"hostview"));
 
 	g_pTangram->m_strCurrentKey = _T("");
 	*ppRetNode = (IWndNode*)m_pWorkNode;
@@ -2970,13 +3026,10 @@ LRESULT CWndFrame::OnQueryAppProxy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT CWndFrame::OnBackgroundWebProxyMsg(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&) {
 	LRESULT lRes = DefWindowProc(uMsg, wParam, lParam);
-	//if (m_bChromeFrame)
-	{
-		IPCMsg* msg = (IPCMsg*)wParam;
-		CHtmlWnd* pWebWnd = (CHtmlWnd*)::GetWindowLongPtr(m_hWnd, GWLP_USERDATA);
-		if (pWebWnd && pWebWnd->m_pChromeRenderFrameHost) {
-			pWebWnd->m_pChromeRenderFrameHost->InternalSend(msg);
-		}
+	IPCMsg* msg = (IPCMsg*)wParam;
+	CHtmlWnd* pWebWnd = (CHtmlWnd*)::GetWindowLongPtr(m_hWnd, GWLP_USERDATA);
+	if (pWebWnd && pWebWnd->m_pChromeRenderFrameHost) {
+		pWebWnd->m_pChromeRenderFrameHost->InternalSend(msg);
 	}
 	return lRes;
 }
@@ -3325,14 +3378,11 @@ STDMETHODIMP CWndFrame::get_Name(BSTR* pVal)
 
 STDMETHODIMP CWndFrame::SendToBackgroundWebProxy(BSTR bstrType, BSTR bstrKey, BSTR bstrData)
 {
-	//if (m_bChromeFrame)
-	{
-		IPCMsg* msg = new IPCMsg;
-		msg->m_strType = OLE2T(bstrType);
-		msg->m_strKey = OLE2T(bstrKey);
-		msg->m_strData = OLE2T(bstrData);
-		::PostMessage(m_hWnd, WM_BACKGROUNDWEBPROXY_MSG, (WPARAM)msg, (WPARAM)0);
-	}
+	IPCMsg* msg = new IPCMsg;
+	msg->m_strType = OLE2T(bstrType);
+	msg->m_strKey = OLE2T(bstrKey);
+	msg->m_strData = OLE2T(bstrData);
+	::PostMessage(m_hWnd, WM_BACKGROUNDWEBPROXY_MSG, (WPARAM)msg, (WPARAM)0);
 	return S_OK;
 }
 

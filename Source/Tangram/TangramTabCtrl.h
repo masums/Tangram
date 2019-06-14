@@ -20,8 +20,6 @@
 
 #pragma once
 
-class CTangramTabCtrl;
-class CTangramListView;
 // CTangramListCtrl
 
 class CTangramListCtrl : public CListCtrl

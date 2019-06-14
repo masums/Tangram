@@ -38,6 +38,7 @@ namespace ChromePlus {
 		m_bDevToolWnd = false;
 		m_strCurKey = _T("");
 		m_strCurXml = _T("");
+		m_strFormXml = _T("");
 		m_pFrame = nullptr;
 		m_hHostWnd=m_hExtendWnd = m_hChildWnd = NULL;
 		m_pChromeRenderFrameHost = g_pTangram->m_pCreatingChromeRenderFrameHostBase;
@@ -45,22 +46,10 @@ namespace ChromePlus {
 	}
 
 	CHtmlWnd::~CHtmlWnd() {
-	}
-
-	CString GenerateRandomString(size_t length)
-	{
-		auto randchar = []() -> char
+		for (auto it : m_mapChildFormsInfo)
 		{
-			const char charset[] =
-				"0123456789"
-				"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-				"abcdefghijklmnopqrstuvwxyz";
-			const size_t max_index = (sizeof(charset) - 1);
-			return charset[rand() % max_index];
-		};
-		std::string str(length, 0);
-		std::generate_n(str.begin(), length, randchar);
-		return CString(str.c_str());
+			delete it.second;
+		}
 	}
 
 	LRESULT CHtmlWnd::OnChromeIPCMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -96,33 +85,6 @@ namespace ChromePlus {
 								{
 								}
 							}
-						}
-						else if (type.CompareNoCase(L"new_tab") == 0)
-						{
-							CString strUrl = xml.GetAttrib(L"link");
-							CString strWorkspaceID = GenerateRandomString(10);
-							CString strRegionID = GenerateRandomString(10);
-							if (xml.FindChildElem())
-							{
-								CString tagName = xml.GetChildTagName();
-								if (tagName.CompareNoCase(L"workspace") == 0)
-								{
-									xml.SetChildAttrib(L"id", strWorkspaceID);
-									xml.IntoElem();
-									if (xml.FindChildElem(L"region"))
-									{
-										xml.SetChildAttrib(L"id", strRegionID);
-									}
-									xml.OutOfElem();
-								}
-								else if (tagName.CompareNoCase(L"layer") == 0)
-								{
-									// Completing workspace and region node.
-								}
-							}
-						}
-						else if (type.CompareNoCase(L"native_window") == 0)
-						{
 						}
 					}
 				}
@@ -182,144 +144,140 @@ namespace ChromePlus {
 			CString strFeatures = pIPCInfo->m_strData;
 			CString _strType = pIPCInfo->m_strType;
 			CString _strKey = pIPCInfo->m_strKey;
-			if (strFeatures == _T("tangramappinit"))
+			if (strFeatures == _T("tangramdomplusinfo"))
 			{
-				CString strName = pIPCInfo->m_strKey;
-				CString strInitData = pIPCInfo->m_strType;
-				if (strInitData != _T(""))
+				m_strFormXml = _strKey;
+				CTangramXmlParse m_Parse;
+				if (m_Parse.LoadXml(_strType))
 				{
-					CMarkup xml;
-					if (xml.SetDoc(strInitData))
+					CString strStartup = _T("");
+					int nCount = m_Parse.GetCount();
+					for (int i = 0; i < nCount; i++)
 					{
-						if (xml.FindElem())
+						CTangramXmlParse* pChild = m_Parse.GetChild(i);
+						CString strName = pChild->name();
+						if (strName == _T("usercontrols"))
 						{
-							CString tagName = xml.GetTagName();
-							if (tagName.CompareNoCase(L"apps") == 0)
+							int nCount = pChild->GetCount();
+							for (int i = 0; i < nCount; i++)
 							{
-								while (xml.FindChildElem(L"app"))
+								CTangramXmlParse* pChild2 = pChild->GetChild(i);
+								CString strID = pChild2->attr(_T("controlkey"), _T(""));
+								if (strID != _T(""))
 								{
-									CString type = xml.GetChildAttrib(L"type");
-									if (type != _T(""))
+									m_mapUserControlsInfo[strID] = pChild2->xml();
+								}
+							}
+						}
+						else if (strName == _T("winforms"))
+						{
+							CString strStartup = _T("");
+							int nCount = pChild->GetCount();
+							for (int i = 0; i < nCount; i++)
+							{
+								CTangramXmlParse* pChild2 = pChild->GetChild(i);
+								CTangramXmlParse* pChild3 = pChild2->GetChild(_T("mdichild"));
+								CString strID = pChild2->attr(_T("formkey"), _T(""));
+								CString strName = pChild2->name();
+								if (strID != _T(""))
+								{
+									m_mapFormsInfo[strID] = pChild2->xml();
+								}
+								if (pChild2->attrBool(_T("showstartup")))
+								{
+									strStartup += strID + _T("|");
+								}
+								if (pChild3)
+								{
+									CTangramXmlParse* pChild4 = pChild2->GetChild(_T("mdiclient"));
+									int nCount = pChild3->GetCount();
+									if (nCount&& pChild4)
 									{
-										if(type==_T("eclipse"))
-										{ 
-											ChromePlus::IPCMsg* pIPCInfo = new ChromePlus::IPCMsg();
-											pIPCInfo->m_strType = type;
-											pIPCInfo->m_strKey = xml.GetChildAttrib(L"key");
-											pIPCInfo->m_strData = xml.GetSubDoc();
-											::PostMessage(m_hWnd, WM_TANGRAMMSG, 20190407, (LPARAM)pIPCInfo);
-										}
-										else if (type == _T("atlmfc"))
+										CMDIChildFormInfo* pInfo = new CMDIChildFormInfo();
+										m_mapChildFormsInfo[strID] = pInfo;
+										for (int i = 0; i < nCount; i++)
 										{
-											ChromePlus::IPCMsg* pIPCInfo = new ChromePlus::IPCMsg();
-											pIPCInfo->m_strType = type;
-											pIPCInfo->m_strKey = xml.GetChildAttrib(L"appid");
-											pIPCInfo->m_strData = xml.GetSubDoc();
-											::PostMessage(m_hWnd, WM_TANGRAMMSG, 20190407, (LPARAM)pIPCInfo);
+											CString strName = pChild3->GetChild(i)->name();
+											if(pChild4->GetChild(strName))
+												pInfo->m_mapFormsInfo[strName] = pChild3->GetChild(i)->xml();
 										}
-										else if (type == _T("officeapp"))
+									}
+								}
+							}
+							int nPos = strStartup.Find(_T("|"));
+							while (nPos != -1)
+							{
+								CString strID = strStartup.Left(nPos);
+								strStartup = strStartup.Mid(nPos + 1);
+								nPos = strStartup.Find(_T("|"));
+								if (g_pTangram->m_pCLRProxy == nullptr)
+									g_pTangram->LoadCLR();
+								if (g_pTangram->m_pCLRProxy)
+								{
+									auto it = m_mapFormsInfo.find(strID);
+									if (it != m_mapFormsInfo.end())
+									{
+										auto it2 = m_mapChildFormsInfo.find(strID);
+										if(it2!= m_mapChildFormsInfo.end())
+											g_pTangram->m_pCurMDIChildFormInfo = it2->second;
+										IDispatch* pDisp = g_pTangram->m_pCLRProxy->CreateCLRObj(it->second);
+										if (pDisp)
 										{
-											CString appid = xml.GetChildAttrib(L"appid");
-											g_pTangram->StartApplication(CComBSTR(appid), CComBSTR(xml.GetSubDoc()));
-										}
-										else if (type == _T("hostapp"))
-										{
-											::PostAppMessage(::GetCurrentThreadId(), WM_TANGRAMMSG, (WPARAM)0, 20190422);
-										}
-										else 
-										{
-											int nPos = type.Find(_T(","));
-											if (nPos != -1)
+											CComQIPtr<IOleWindow> pOleWnd(pDisp);
+											if (pOleWnd)
 											{
-												g_pTangram->m_pCLRProxy->Extend(xml.GetChildAttrib(L"appid"), xml.GetChildAttrib(L"key"), xml.GetSubDoc());
-											}
-											else
-											{
+												HWND hWnd = 0;
+												pOleWnd->GetWindow(&hWnd);
+												if (hWnd)
+												{
 
+												}
 											}
 										}
-										//xml.IntoElem();
-										//if (xml.FindChildElem(L"window"))
-										//{
-										//	CString key = xml.GetChildAttrib(L"key");
-										//	if (key.IsEmpty())
-										//	{
-										//		key = L"default";
-										//	}
-										//	CString layoutXML = xml.GetSubDoc();
-										//	if (/*!bChild&&*/m_hExtendWnd == nullptr)
-										//	{
-										//		m_hExtendWnd = ::CreateWindowEx(NULL, _T("Chrome Extended Window Class"), L"", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0, 0, 0, 0, ::GetParent(m_hWnd), NULL, theApp.m_hInstance, NULL);
-										//		m_hChildWnd = ::CreateWindowEx(NULL, _T("Chrome Extended Window Class"), L"", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0, 0, 0, 0, m_hExtendWnd, (HMENU)AFX_IDW_PANE_FIRST, theApp.m_hInstance, NULL);
-
-										//		::SetWindowLongPtr(m_hExtendWnd, GWLP_USERDATA, (LONG_PTR)m_hChildWnd);
-										//		::SetWindowLongPtr(m_hChildWnd, GWLP_USERDATA, (LONG_PTR)this);
-										//	}
-										//	if (m_hExtendWnd)
-										//	{
-										//		if (m_pFrame == nullptr) {
-										//			IWndPage* pPage = nullptr;
-										//			pChromeTangram->CreateWndPage((__int64)m_hExtendWnd, &pPage);
-										//			if (pPage) {
-										//				IWndFrame* pFrame = nullptr;
-										//				pPage->CreateFrame(CComVariant((__int64)0), CComVariant((__int64)m_hChildWnd), CComBSTR("default"), &pFrame);
-										//				if (pFrame)
-										//				{
-										//					m_pFrame = (CWndFrame*)pFrame;
-										//					m_pFrame->m_pWebWnd = this;
-										//				}
-										//			}
-										//		}
-										//		if (m_pFrame)
-										//		{
-										//			key.MakeLower();
-										//			IWndNode* pNode = nullptr;
-										//			m_pFrame->Extend(CComBSTR(key), CComBSTR(layoutXML), &pNode);
-										//			if (pNode)
-										//			{
-										//				m_strCurKey = key;
-										//				if (m_pFrame->m_pBindingNode)
-										//					m_hHostWnd = m_pFrame->m_pBindingNode->m_pHostWnd->m_hWnd;
-										//				else
-										//					m_hHostWnd = NULL;
-										//				if (::IsWindowVisible(m_hWnd))
-										//				{
-										//					auto it = pChromeTangram->m_mapBrowserWnd.find(::GetParent(m_hWnd));
-										//					if (it != pChromeTangram->m_mapBrowserWnd.end())
-										//					{
-										//						CBrowserWnd* pParent = it->second;
-										//						pParent->ChromeDraw();
-										//						pParent->m_pBrowser->LayoutBrowser();
-										//						::PostMessage(pParent->m_hWnd, WM_CHROMEDRAW, 2, 1);//| SWP_FRAMECHANGED
-										//						if (pParent->m_pBrowser && m_pFrame->m_pBindingNode == nullptr) {
-										//							pParent->m_pBrowser->LayoutBrowser();
-										//						}
-										//					}
-										//				}
-										//			}
-										//		}
-										//	}
-										//}
-										//else
-										//{
-										//	// TODO: other section, e.g. data
-										//}
-										//xml.OutOfElem();
 									}
 								}
 							}
 						}
+						else if (strName == _T("atlmfcs"))
+						{
+							int nCount = pChild->GetCount();
+							for (int i = 0; i < nCount; i++)
+							{
+								CTangramXmlParse* pChild2 = pChild->GetChild(i);
+								CString strID = pChild2->attr(_T("atlmfckey"), _T(""));
+								if (strID != _T(""))
+								{
+									m_mapAtlMFCsInfo[strID] = pChild2->xml();
+								}
+							}
+						}
+						else if (strName == _T("eclipses"))
+						{
+							int nCount = pChild->GetCount();
+							for (int i = 0; i < nCount; i++)
+							{
+								CTangramXmlParse* pChild2 = pChild->GetChild(i);
+								CString strID = pChild2->attr(_T("eclipsekey"), _T(""));
+								if (strID != _T(""))
+								{
+									m_mapeclipsesInfo[strID] = pChild2->xml();
+								}
+							}
+						}
+						else if (strName == _T("startups"))
+						{
+							int nCount = pChild->GetCount();
+							for (int i = 0; i < nCount; i++)
+							{
+								CTangramXmlParse* pChild2 = pChild->GetChild(i);
+								CString strID = pChild2->attr(_T("startupkey"), _T(""));
+								if (strID != _T(""))
+								{
+									m_mapStartupsInfo[strID] = pChild2->xml();
+								}
+							}
+						}
 					}
-				}
-			}
-			else if (strFeatures == _T("clr"))
-			{
-				CComPtr<IDispatch> pCLRControl;
-				g_pTangram->CreateCLRObj(CComBSTR(pIPCInfo->m_strKey), &pCLRControl);
-				HWND hWnd = g_pTangram->m_pCLRProxy->GetCtrlHandle(pCLRControl);
-				if (g_pTangram->m_pCLRProxy->IsWinForm(hWnd))
-				{
-					g_pTangram->m_pCLRProxy->ActiveCLRMethod(pCLRControl, CComBSTR("Show"), nullptr, nullptr);
 				}
 			}
 			else if (strFeatures == _T("eclipse"))
@@ -625,33 +583,6 @@ namespace ChromePlus {
 
 					::SetWindowLongPtr(m_hExtendWnd, GWLP_USERDATA, (LONG_PTR)m_hChildWnd);
 					::SetWindowLongPtr(m_hChildWnd, GWLP_USERDATA, (LONG_PTR)this);
-				}
-				if (m_hExtendWnd)
-				{
-					//CString strWorkspaceID = CString(m_pChromeRenderFrameHost->m_strWorkspaceID.c_str());
-					//CString strRegionID = CString(m_pChromeRenderFrameHost->m_strRegionID.c_str());
-					//g_pTangram->RegisterWorkspaceHWNDInternal(strWorkspaceID, m_hExtendWnd, nullptr);
-					//void* pRegion_ = nullptr;
-					//g_pTangram->RegisterRegionHWNDInternal(strRegionID, strWorkspaceID, m_hChildWnd, &pRegion_);
-					//if (pRegion_)
-					//{
-					//	IWndFrame* pRegion = (IWndFrame*)pRegion_;
-					//	m_pFrame = (CWndFrame*)pRegion;
-					//	m_pFrame->m_pWebWnd = this;
-
-					//	if (m_pFrame->m_pBindingNode)
-					//		m_hHostWnd = m_pFrame->m_pBindingNode->m_pHostWnd->m_hWnd;
-					//	else
-					//		m_hHostWnd = NULL;
-					//	m_strCurKey = m_pFrame->m_strCurrentKey;
-					//	pParent->ChromeDraw();
-					//	pParent->m_pBrowser->LayoutBrowser();
-					//	::PostMessage(pParent->m_hWnd, WM_CHROMEDRAW, 2, 1);//| SWP_FRAMECHANGED
-					//	if (pParent->m_pBrowser&&m_pFrame->m_pBindingNode == nullptr) {
-					//		pParent->m_pBrowser->LayoutBrowser();
-					//	}
-					//}
-
 				}
 			}
 		}

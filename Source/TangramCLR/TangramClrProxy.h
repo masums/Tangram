@@ -60,6 +60,7 @@ public:
 	map<IChromeWebBrowser*, gcroot<ChromeWebBrowser^>>	m_mapChromeWebBrowser;
 	gcroot<PropertyGrid^>						m_pPropertyGrid;
 	gcroot<TangramCLR::TangramProxy^>			m_pTangramProxy;
+	gcroot<Form^>								m_pCurrentPForm;
 
 	Object^ _getObject(Object^ key);
 	bool _insertObject(Object^ key, Object^ val);
@@ -89,7 +90,6 @@ public:
 	CString GetNtpXML(CString strKey);
 	IDispatch* CreateFormAsMdiChild(BSTR bstrObjID, IDispatch* pMdiParent);
 private:
-	CString									m_strCurrentWinFormTemplate;
 	map<HWND, gcroot<Form^>>				m_mapForm;
 	gcroot<Hashtable^>						m_htObjects;
 	gcroot<Object^>							m_pTangramObj;
@@ -104,10 +104,10 @@ private:
 	CTangramWPFObj* CreateWPFControl(IWndNode* pNode, HWND hPWnd, UINT nID);
 	HRESULT ActiveCLRMethod(BSTR bstrObjID, BSTR bstrMethod, BSTR bstrParam, BSTR bstrData);
 	HRESULT ActiveCLRMethod(IDispatch* pCLRObj, BSTR bstrMethod, BSTR bstrParam, BSTR bstrData);
-	IDispatch* CreateCLRObj(BSTR bstrObjID);
+	IDispatch* CreateCLRObj(CString bstrObjID);
 	HRESULT ProcessCtrlMsg(HWND hCtrl, bool bShiftKey);
 	BOOL ProcessFormMsg(HWND hFormWnd, LPMSG lpMsg, int nMouseButton);
-	IDispatch* TangramCreateObject(BSTR bstrObjID, long hParent, IWndNode* pHostNode);
+	IDispatch* TangramCreateObject(BSTR bstrObjID, HWND hParent, IWndNode* pHostNode);
 	int IsWinForm(HWND hWnd);
 	int IsSpecifiedType(IUnknown* pUnknown, BSTR bstrName);
 	IDispatch* GetCLRControl(IDispatch* CtrlDisp, BSTR bstrNames);

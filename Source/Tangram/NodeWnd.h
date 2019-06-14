@@ -20,8 +20,6 @@
 
 #pragma once
 
-class CTangramHtmlTreeWnd;
-
 class CNodeWnd : public CWnd
 {
 	DECLARE_DYNCREATE(CNodeWnd)

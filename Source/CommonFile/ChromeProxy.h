@@ -112,6 +112,7 @@ namespace ChromePlus {
 		virtual void SetTangramMessagePumpImpl(
 			ChromePlus::CTangramMessagePumpImpl* pTangramMessagePumpImpl) = 0;
 		virtual CString GetSchemeBaseName() = 0;
+		virtual HICON GetAppIcon(int nIndex) = 0;
 	};
 
 	class CTangramMainDllLoader {

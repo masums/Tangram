@@ -27,6 +27,7 @@
 #include "TangramNodeCLREvent.h"
 #include "ErrorCtrl.h"
 #include "TangramClrProxy.h"
+#include "TangramNewChildForm.h"
 
 #include <io.h>
 #include <stdio.h>
@@ -42,7 +43,7 @@ CTangramCLRApp theApp;
 CTangramCLRProxy theAppProxy;
 CTangramApplicationImpl theAppImpl;
 
-CTangramCLRProxy::CTangramCLRProxy():CTangramCLRProxyImpl()
+CTangramCLRProxy::CTangramCLRProxy() :CTangramCLRProxyImpl()
 {
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_CrtSetBreakAlloc(308);
@@ -50,6 +51,7 @@ CTangramCLRProxy::CTangramCLRProxy():CTangramCLRProxyImpl()
 	//_CrtSetBreakAlloc(341);
 	m_strExtendableTypes = L"|WebBrowser|Panel|TreeView|ListView|MonthCalendar|TabPage|TabControl|GroupBox|FlowLayoutPanel|TableLayoutPanel|SplitContainer|";
 	m_bHostApp = false;
+	m_pCurrentPForm = nullptr;
 	m_strCurrentWinFormTemplate = _T("");
 	Forms::Application::EnableVisualStyles();
 	m_pPropertyGrid = nullptr;
@@ -100,13 +102,13 @@ CTangramCLRProxy::~CTangramCLRProxy()
 	if (m_bHostApp/* && *//*::GetModuleHandle(_T("comdlg32.dll"))*/)
 	{
 		BOOL bUnload = ::FreeLibrary(::GetModuleHandle(_T("TangramCore.dll")));
-		while(bUnload)
+		while (bUnload)
 			bUnload = ::FreeLibrary(::GetModuleHandle(_T("TangramCore.dll")));
 	}
 }
 
 CString CTangramCLRApp::GetNtpXML(CString strKey) {
-	String^ strRet =  TangramCLR::Tangram::GetTangram()->Fire_OnGetTangramNtpXml(BSTR2STRING(strKey));
+	String^ strRet = TangramCLR::Tangram::GetTangram()->Fire_OnGetTangramNtpXml(BSTR2STRING(strKey));
 	if (String::IsNullOrEmpty(strRet))
 		return _T("<tangram><window><node id='splitter' name='container' rows='1' cols='2' height ='100,100,' width='300,500,' borderwidth='0' splitterwidth='4' middlecolor='RGB(240,240,240)'><node name='launcher' id='ClrCtrl' cnnid='tangramclr.DefaultNTPCtrl,tangramclr' /><node name='host' caption='host' id='hostview' borderwidth='0' /></node></window></tangram>");
 	return strRet;
@@ -117,9 +119,9 @@ bool CTangramCLRApp::DoIdleWork() {
 	return false;
 }
 
-HWND CTangramCLRApp::InitTangramApp() 
-{ 
-	return (HWND)TangramCLR::Tangram::GetTangram()->Fire_OnInitTangramApp().ToPointer();
+HWND CTangramCLRApp::InitTangramApp()
+{
+	return 0;// (HWND)TangramCLR::Tangram::GetTangram()->Fire_OnInitTangramApp().ToPointer();
 };
 
 void CTangramCLRApp::ProcessMsg(MSG* msg) {
@@ -128,11 +130,11 @@ void CTangramCLRApp::ProcessMsg(MSG* msg) {
 		{
 			switch (msg->lParam)
 			{
-			case 20190422:
-			{
-				TangramCLR::Tangram::GetTangram()->Fire_OnCloudAppInit();
-			}
-			break;
+			//case 20190422:
+			//{
+			//	TangramCLR::Tangram::GetTangram()->Fire_OnCloudAppInit();
+			//}
+			//break;
 			default:
 				break;
 			}
@@ -146,32 +148,32 @@ void CTangramCLRProxy::ExportCLRObjInfo(CString strPath)
 {
 	CString strLogMsg; strLogMsg.Format(L"Export CLR object info from %s", strPath);
 	theApp.m_pTangramProxyBase->Log(strLogMsg);
-	if(strPath==_T(""))
+	if (strPath == _T(""))
 		strPath = Forms::Application::ExecutablePath->ToLower();
-	Assembly^ m_pDotNetAssembly = nullptr;
+	Assembly ^ m_pDotNetAssembly = nullptr;
 	try
 	{
 		m_pDotNetAssembly = Assembly::LoadFile(BSTR2STRING(strPath));
 		if (m_pDotNetAssembly == nullptr)
 			return;
 	}
-	catch (ArgumentNullException^ e)
+	catch (ArgumentNullException ^ e)
 	{
 		Debug::WriteLine(L"Tangram InitAppFormTypeDic: " + e->Message);
 	}
-	catch (ArgumentException^ e)
+	catch (ArgumentException ^ e)
 	{
 		Debug::WriteLine(L"Tangram InitAppFormTypeDic: " + e->Message);
 	}
-	catch (FileNotFoundException^ e)
+	catch (FileNotFoundException ^ e)
 	{
 		Debug::WriteLine(L"Tangram InitAppFormTypeDic: " + e->Message);
 	}
-	catch (FileLoadException^ e)
+	catch (FileLoadException ^ e)
 	{
 		Debug::WriteLine(L"Tangram InitAppFormTypeDic: " + e->Message);
 	}
-	catch (BadImageFormatException^ e)
+	catch (BadImageFormatException ^ e)
 	{
 		Debug::WriteLine(L"Tangram InitAppFormTypeDic: " + e->Message);
 	}
@@ -188,7 +190,7 @@ void CTangramCLRProxy::ExportCLRObjInfo(CString strPath)
 			else
 			{
 				cli::array<Type^>^ pArray = m_pDotNetAssembly->GetExportedTypes();
-				for each (Type^ type in pArray)
+				for each (Type ^ type in pArray)
 				{
 					CComBSTR bstrTypeFullName = STRING2BSTR(type->FullName);
 					CString strTypeFullName = OLE2T(bstrTypeFullName);
@@ -223,7 +225,7 @@ void CTangramCLRProxy::ExportCLRObjInfo(CString strPath)
 								}
 							}
 						}
-						catch (Exception^ e)
+						catch (Exception ^ e)
 						{
 						}
 						finally
@@ -244,7 +246,7 @@ void CTangramCLRProxy::ExportCLRObjInfo(CString strPath)
 							m_Parse.LoadXml(strXml);
 							m_Parse.SaveFile(strPath2);
 						}
-						catch (Exception^ e)
+						catch (Exception ^ e)
 						{
 						}
 						finally
@@ -263,7 +265,7 @@ void CTangramCLRProxy::ExportCLRObjInfo(CString strPath)
 							m_Parse.LoadXml(strXml);
 							m_Parse.SaveFile(strPath2);
 						}
-						catch (Exception^ e)
+						catch (Exception ^ e)
 						{
 						}
 						finally
@@ -282,8 +284,8 @@ void CTangramCLRProxy::ExportAllCLRObjInfo(CString _strPath)
 	strPath += _T("\\");
 	strPath.Replace(_T("\\\\"), _T("\\"));
 
-	if (::PathIsDirectory(strPath)==false)
-		return ;
+	if (::PathIsDirectory(strPath) == false)
+		return;
 	HANDLE hFind; // file handle
 	WIN32_FIND_DATA FindFileData;
 
@@ -315,7 +317,7 @@ void CTangramCLRProxy::ExportAllCLRObjInfo(CString _strPath)
 				if (nPos != -1)
 				{
 					CString s = str.Mid(nPos);
-					if(s.CompareNoCase(_T(".dll"))==0)
+					if (s.CompareNoCase(_T(".dll")) == 0)
 						ExportCLRObjInfo(strPath + FindFileData.cFileName);
 				}
 			}
@@ -328,7 +330,7 @@ void CTangramCLRProxy::ExportAllCLRObjInfo(CString _strPath)
 			else {
 				// some error occured, close the handle and return false
 				FindClose(hFind);
-				return ;
+				return;
 			}
 		}
 	}//while
@@ -337,10 +339,10 @@ void CTangramCLRProxy::ExportAllCLRObjInfo(CString _strPath)
 	return;
 }
 
-IDispatch* CTangramCLRProxy::CreateFormAsMdiChild(BSTR bstrObjID, IDispatch* pMdiParent)
+IDispatch* CTangramCLRProxy::CreateFormAsMdiChild(BSTR bstrObjID, IDispatch * pMdiParent)
 {
 	Object^ pMdiObj = (Object^)Marshal::GetObjectForIUnknown((IntPtr)pMdiParent);
-	if (pMdiObj&&pMdiObj->GetType()->IsSubclassOf(Form::typeid))
+	if (pMdiObj && pMdiObj->GetType()->IsSubclassOf(Form::typeid))
 	{
 		Object^ pObj = TangramCLR::Tangram::CreateObject(BSTR2STRING(bstrObjID));
 		if (pObj && pObj->GetType()->IsSubclassOf(Form::typeid))
@@ -354,7 +356,7 @@ IDispatch* CTangramCLRProxy::CreateFormAsMdiChild(BSTR bstrObjID, IDispatch* pMd
 }
 
 void CTangramCLRProxy::AttachVSPropertyWnd(HWND hVSPropertyGrid)
-{ 
+{
 	m_pPropertyGrid = (PropertyGrid^)(Control^)Control::FromHandle((IntPtr)hVSPropertyGrid);
 	if (m_pPropertyGrid)
 	{
@@ -366,7 +368,7 @@ void CTangramCLRProxy::AttachVSPropertyWnd(HWND hVSPropertyGrid)
 	}
 }
 
-void CTangramCLRProxy::AttachCLRObjEvent(IDispatch* Sender, WindowEventType nType, HWND hNotifyWnd, VARIANT_BOOL bAttachEvent)
+void CTangramCLRProxy::AttachCLRObjEvent(IDispatch * Sender, WindowEventType nType, HWND hNotifyWnd, VARIANT_BOOL bAttachEvent)
 {
 	Control^ pCtrl = (Control^)Marshal::GetObjectForIUnknown((IntPtr)Sender);
 	if (pCtrl != nullptr)
@@ -382,7 +384,7 @@ void CTangramCLRProxy::AttachCLRObjEvent(IDispatch* Sender, WindowEventType nTyp
 	}
 }
 
-BSTR CTangramCLRProxy::AttachObjEvent(IDispatch* EventObj, IDispatch* SourceObj, WindowEventType EventType, IDispatch* HTMLWindow)
+BSTR CTangramCLRProxy::AttachObjEvent(IDispatch * EventObj, IDispatch * SourceObj, WindowEventType EventType, IDispatch * HTMLWindow)
 {
 	BSTR bstrRet = L"";
 	Control^ pCtrl = (Control^)Marshal::GetObjectForIUnknown((IntPtr)SourceObj);
@@ -424,12 +426,12 @@ BSTR CTangramCLRProxy::AttachObjEvent(IDispatch* EventObj, IDispatch* SourceObj,
 	return bstrRet;
 }
 
-bool CTangramCLRProxy::IsSupportDesigner() 
-{ 
-	return true; 
+bool CTangramCLRProxy::IsSupportDesigner()
+{
+	return true;
 }
 
-void CTangramCLRProxy::OnDestroyChromeBrowser(IChromeWebBrowser* pChromeWebBrowser) 
+void CTangramCLRProxy::OnDestroyChromeBrowser(IChromeWebBrowser * pChromeWebBrowser)
 {
 	auto it = m_mapChromeWebBrowser.find(pChromeWebBrowser);
 	if (it != theAppProxy.m_mapChromeWebBrowser.end())
@@ -439,7 +441,7 @@ void CTangramCLRProxy::OnDestroyChromeBrowser(IChromeWebBrowser* pChromeWebBrows
 	}
 };
 
-CTangramWPFObj* CTangramCLRProxy::CreateWPFControl(IWndNode* pNode, HWND hPWnd, UINT nID)
+CTangramWPFObj* CTangramCLRProxy::CreateWPFControl(IWndNode * pNode, HWND hPWnd, UINT nID)
 {
 	if (pNode)
 	{
@@ -470,28 +472,28 @@ CTangramWPFObj* CTangramCLRProxy::CreateWPFControl(IWndNode* pNode, HWND hPWnd, 
 				try {
 					pWpfControlWrapper->m_pSource->RootVisual = pWpfControlWrapper->m_pUIElement;
 				}
-				catch (Markup::XamlParseException^ e)
+				catch (Markup::XamlParseException ^ e)
 				{
 					Debug::WriteLine(L"Tangram WPFControlWrapper Exception 1: " + e->Message);
 					Debug::WriteLine(L"Tangram WPFControlWrapper Exception 1: " + e->InnerException->Message);
 				}
 			}
 		}
-		catch (System::Exception^ ex)
+		catch (System::Exception ^ ex)
 		{
 			Debug::WriteLine(L"Tangram WPFControlWrapper Exception 1: " + ex->Message);
 			Debug::WriteLine(L"Tangram WPFControlWrapper Exception 1: " + ex->InnerException->Message);
 		}
 
-		if(pWpfControlWrapper!=nullptr)
+		if (pWpfControlWrapper != nullptr)
 			return pWpfControlWrapper;
 	}
-	return nullptr; 
+	return nullptr;
 }
 
-HRESULT CTangramCLRProxy::NavigateURL(IWndNode* pNode, CString strURL, IDispatch* dispObjforScript)
-{ 
-	return S_FALSE; 
+HRESULT CTangramCLRProxy::NavigateURL(IWndNode * pNode, CString strURL, IDispatch * dispObjforScript)
+{
+	return S_FALSE;
 }
 
 void CTangramCLRProxy::WindowCreated(LPCTSTR strClassName, LPCTSTR strName, HWND hPWnd, HWND hWnd)
@@ -501,8 +503,8 @@ void CTangramCLRProxy::WindowCreated(LPCTSTR strClassName, LPCTSTR strName, HWND
 		auto it = m_mapForm.find(hPWnd);
 		if (it == m_mapForm.end())
 		{
-			Control^  pPForm = Form::FromHandle((IntPtr)hPWnd);
-			if (pPForm!=nullptr)
+			Control^ pPForm = Form::FromHandle((IntPtr)hPWnd);
+			if (pPForm != nullptr)
 			{
 				if (IsWinForm(hPWnd))
 				{
@@ -511,8 +513,8 @@ void CTangramCLRProxy::WindowCreated(LPCTSTR strClassName, LPCTSTR strName, HWND
 					if (it == m_mapForm.end())
 					{
 						m_mapForm[hPWnd] = _pForm;
-						if(m_pOnLoad)
-						{ 
+						if (m_pOnLoad)
+						{
 						}
 						else
 							m_pOnLoad = gcnew EventHandler(CTangramCLRProxy::OnLoad);
@@ -525,7 +527,7 @@ void CTangramCLRProxy::WindowCreated(LPCTSTR strClassName, LPCTSTR strName, HWND
 	}
 }
 
-void CTangramCLRProxy::WindowDestroy(HWND hWnd) 
+void CTangramCLRProxy::WindowDestroy(HWND hWnd)
 {
 	auto it2 = this->m_mapWpfControlWrapper.find(hWnd);
 	if (it2 != m_mapWpfControlWrapper.end())
@@ -543,7 +545,7 @@ void CTangramCLRProxy::WindowDestroy(HWND hWnd)
 	if (it != m_mapForm.end())
 	{
 		m_mapForm.erase(it);
-		if (m_mapForm.size()==0)
+		if (m_mapForm.size() == 0)
 		{
 			//if (::IsWindow(m_hMsgWnd))
 			//	::DestroyWindow(m_hMsgWnd);
@@ -551,17 +553,17 @@ void CTangramCLRProxy::WindowDestroy(HWND hWnd)
 			//	::DestroyWindow(m_pProxy->m_hHostWnd);
 			//Forms::Application::Exit();
 			//PostQuitMessage(0);
-			::PostAppMessage(::GetCurrentThreadId(), WM_TANGRAMMSG, theAppProxy.m_bHostApp?1:0, 20190511);
+			::PostAppMessage(::GetCurrentThreadId(), WM_TANGRAMMSG, theAppProxy.m_bHostApp ? 1 : 0, 20190511);
 		}
 	}
 }
 
-void CTangramCLRProxy::OnVisibleChanged(System::Object ^sender, System::EventArgs ^e)
+void CTangramCLRProxy::OnVisibleChanged(System::Object ^ sender, System::EventArgs ^ e)
 {
 	Control^ pChild = (Control^)sender;
 	if (pChild->Visible)
 	{
-		LONG_PTR lp=::GetWindowLongPtr((HWND)pChild->Handle.ToInt64(), GWLP_USERDATA);
+		LONG_PTR lp = ::GetWindowLongPtr((HWND)pChild->Handle.ToInt64(), GWLP_USERDATA);
 		if (lp)
 		{
 			Form^ pForm = (Form^)Form::FromHandle((IntPtr)lp);
@@ -613,7 +615,7 @@ void CTangramCLRProxy::OnVisibleChanged(System::Object ^sender, System::EventArg
 	}
 }
 
-void CTangramCLRProxy::OnItemSelectionChanged(System::Object ^sender, Forms::ListViewItemSelectionChangedEventArgs ^e)
+void CTangramCLRProxy::OnItemSelectionChanged(System::Object ^ sender, Forms::ListViewItemSelectionChangedEventArgs ^ e)
 {
 	if (e->Item->Tag != nullptr)
 	{
@@ -640,7 +642,7 @@ void CTangramCLRProxy::OnItemSelectionChanged(System::Object ^sender, Forms::Lis
 	}
 }
 
-void CTangramCLRProxy::OnAfterSelect(System::Object ^sender, Forms::TreeViewEventArgs ^e)
+void CTangramCLRProxy::OnAfterSelect(System::Object ^ sender, Forms::TreeViewEventArgs ^ e)
 {
 	if (e->Node->Tag != nullptr)
 	{
@@ -667,7 +669,7 @@ void CTangramCLRProxy::OnAfterSelect(System::Object ^sender, Forms::TreeViewEven
 	}
 }
 
-void CTangramCLRProxy::SetObjectProperty(IDispatch* pDisp, BSTR bstrPropertyName, BSTR bstrPropertyValue)
+void CTangramCLRProxy::SetObjectProperty(IDispatch * pDisp, BSTR bstrPropertyName, BSTR bstrPropertyValue)
 {
 	try
 	{
@@ -687,21 +689,21 @@ void CTangramCLRProxy::SetObjectProperty(IDispatch* pDisp, BSTR bstrPropertyName
 	}
 }
 
-Object^ CTangramCLRProxy::InitTangramCtrl(Form^ pForm, Control^ pCtrl, bool bSave)
+Object^ CTangramCLRProxy::InitTangramCtrl(Form ^ pForm, Control ^ pCtrl, bool bSave)
 {
 	if (pForm->Tag != nullptr && pForm->Tag->Equals(L"__NEWVERSION__"))
 	{
 		return nullptr;
 	}
 	WndPage^ pWndPage = TangramCLR::Tangram::CreateWndPage(pForm, nullptr);
-	if (pCtrl&&pForm)
+	if (pCtrl && pForm)
 	{
-		if (m_strCurrentWinFormTemplate!=_T(""))
+		if (m_strCurrentWinFormTemplate != _T(""))
 		{
 			::SendMessage((HWND)pForm->Handle.ToInt64(), WM_TANGRAMDATA, (WPARAM)m_strCurrentWinFormTemplate.GetBuffer(), 3);
 			m_strCurrentWinFormTemplate = _T("");
 		}
-		else if (m_pProxy->m_strAppCurrentFormTemplatePath!=_T(""))
+		else if (m_pProxy->m_strAppCurrentFormTemplatePath != _T(""))
 		{
 			::SendMessage((HWND)pForm->Handle.ToInt64(), WM_TANGRAMDATA, (WPARAM)m_pProxy->m_strAppCurrentFormTemplatePath.GetBuffer(), 3);
 		}
@@ -714,7 +716,7 @@ Object^ CTangramCLRProxy::InitTangramCtrl(Form^ pForm, Control^ pCtrl, bool bSav
 			TabControl^ pTabCtrl = (TabControl^)pCtrl;
 			pActiveCtrl = pTabCtrl->SelectedTab;
 		}
-		if (pCtrl->GetType()==Forms::ToolStrip::typeid)
+		if (pCtrl->GetType() == Forms::ToolStrip::typeid)
 		{
 			Forms::ToolStrip^ pToolStrip = (Forms::ToolStrip^)pCtrl;
 			Forms::ToolStripItem^ button = (Forms::ToolStripItem^)pToolStrip->Items[L"newToolStripButton"];
@@ -723,7 +725,7 @@ Object^ CTangramCLRProxy::InitTangramCtrl(Form^ pForm, Control^ pCtrl, bool bSav
 				button->Click += gcnew System::EventHandler(&OnClick);
 			}
 		}
-		if (pCtrl->GetType()==Forms::MenuStrip::typeid)
+		if (pCtrl->GetType() == Forms::MenuStrip::typeid)
 		{
 			Forms::MenuStrip^ pMenuStrip = (Forms::MenuStrip^)pCtrl;
 			Forms::ToolStripMenuItem^ fileMenu = (Forms::ToolStripMenuItem^)pMenuStrip->Items[L"fileMenu"];
@@ -732,7 +734,7 @@ Object^ CTangramCLRProxy::InitTangramCtrl(Form^ pForm, Control^ pCtrl, bool bSav
 				Forms::ToolStripMenuItem^ item = (Forms::ToolStripMenuItem^)fileMenu->DropDownItems[L"newToolStripMenuItem"];
 				if (item != nullptr)
 				{
-					item->Click+= gcnew System::EventHandler(&OnClick);
+					item->Click += gcnew System::EventHandler(&OnClick);
 				}
 			}
 		}
@@ -740,7 +742,7 @@ Object^ CTangramCLRProxy::InitTangramCtrl(Form^ pForm, Control^ pCtrl, bool bSav
 
 		CString strIndex = OLE2T(bstrIndex);
 		strIndex.MakeLower();
-		for each (Control^ pChild in pCtrl->Controls)
+		for each (Control ^ pChild in pCtrl->Controls)
 		{
 			if (pChild != pActiveCtrl)
 			{
@@ -748,9 +750,9 @@ Object^ CTangramCLRProxy::InitTangramCtrl(Form^ pForm, Control^ pCtrl, bool bSav
 				if (pActiveCtrl == nullptr)
 				{
 					String^ strType = pType->FullName;
-					if (strType->IndexOf(L"System.Drawing") == 0||strType->IndexOf(L"System.Windows.Forms.Button") == 0||strType->IndexOf(L"System.Windows.Forms.Label") == 0||strType->IndexOf(L"System.Windows.Forms.Text") == 0)
+					if (strType->IndexOf(L"System.Drawing") == 0 || strType->IndexOf(L"System.Windows.Forms.Button") == 0 || strType->IndexOf(L"System.Windows.Forms.Label") == 0 || strType->IndexOf(L"System.Windows.Forms.Text") == 0)
 						continue;
-					String^ strType2 = strType->Replace(L"System.Windows.Forms.", L"");
+					String ^ strType2 = strType->Replace(L"System.Windows.Forms.", L"");
 					if ((m_strExtendableTypes->IndexOf(L"|" + strType2 + L"|") != -1 && pChild->Dock == DockStyle::None) || pChild->Dock == DockStyle::Fill)
 					{
 						bool bExtendable = (pChild->Tag == nullptr);
@@ -820,7 +822,7 @@ Object^ CTangramCLRProxy::InitTangramCtrl(Form^ pForm, Control^ pCtrl, bool bSav
 					pChild->VisibleChanged += m_pOnCtrlVisible;
 				}
 				if (pType->IsSubclassOf(UserControl::typeid) == false)
-					InitTangramCtrl(pForm, pChild,bSave);
+					InitTangramCtrl(pForm, pChild, bSave);
 			}
 		}
 		if (pActiveCtrl != nullptr)
@@ -876,7 +878,7 @@ Object^ CTangramCLRProxy::InitTangramCtrl(Form^ pForm, Control^ pCtrl, bool bSav
 	return pWndPage;
 }
 
-Object^ CTangramCLRProxy::InitTangramNode(IWndNode* _pNode, Control^ pCtrl, bool bSave)
+Object^ CTangramCLRProxy::InitTangramNode(IWndNode * _pNode, Control ^ pCtrl, bool bSave)
 {
 	if (::IsChild(m_pProxy->m_hHostWnd, (HWND)pCtrl->Handle.ToInt64()))
 		return nullptr;
@@ -886,13 +888,13 @@ Object^ CTangramCLRProxy::InitTangramNode(IWndNode* _pNode, Control^ pCtrl, bool
 	{
 		pWndPage = pNode->WndPage;
 		IWndPage* pPage = pWndPage->m_pPage;
-		for each (Control^ pChild in pCtrl->Controls)
+		for each (Control ^ pChild in pCtrl->Controls)
 		{
 			Type^ pType = pChild->GetType();
 			String^ strType = pType->FullName;
 			if (strType->IndexOf(L"System.Drawing") == 0 || strType->IndexOf(L"System.Windows.Forms.Button") == 0 || strType->IndexOf(L"System.Windows.Forms.Label") == 0 || strType->IndexOf(L"System.Windows.Forms.Text") == 0)
 				break;
-			String^ strType2 = strType->Replace(L"System.Windows.Forms.", L"");
+			String ^ strType2 = strType->Replace(L"System.Windows.Forms.", L"");
 			if ((m_strExtendableTypes->IndexOf(L"|" + strType2 + L"|") != -1 && pChild->Dock == DockStyle::None) || pChild->Dock == DockStyle::Fill)
 			{
 				bool bExtendable = (pChild->Tag == nullptr);
@@ -949,7 +951,7 @@ Object^ CTangramCLRProxy::InitTangramNode(IWndNode* _pNode, Control^ pCtrl, bool
 	return pWndPage;
 }
 
-void CTangramCLRProxy::OnMdiChildActivate(System::Object ^sender, System::EventArgs ^e)
+void CTangramCLRProxy::OnMdiChildActivate(System::Object ^ sender, System::EventArgs ^ e)
 {
 	Form^ pForm = static_cast<Form^>(sender);
 	String^ strKey = L"";
@@ -968,7 +970,7 @@ void CTangramCLRProxy::OnMdiChildActivate(System::Object ^sender, System::EventA
 		if (objTag != nullptr)
 		{
 			String^ strTag = objTag->ToString();
-			if (String::IsNullOrEmpty(strTag)==false)
+			if (String::IsNullOrEmpty(strTag) == false)
 			{
 				int nIndex = strTag->IndexOf("|");
 				if (nIndex != -1)
@@ -986,7 +988,7 @@ void CTangramCLRProxy::OnMdiChildActivate(System::Object ^sender, System::EventA
 	theApp.m_pTangram->ExtendFrames(pForm->Handle.ToInt64(), CComBSTR(L""), STRING2BSTR(strKey), CComBSTR(L""), true);
 }
 
-void CTangramCLRProxy::OnLoad(System::Object ^sender, System::EventArgs ^e)
+void CTangramCLRProxy::OnLoad(System::Object ^ sender, System::EventArgs ^ e)
 {
 	Form^ pForm = static_cast<Form^>(sender);
 	WndPage^ pWndPage = static_cast<WndPage^>(theAppProxy.InitTangramCtrl(pForm, pForm, true));
@@ -1023,7 +1025,7 @@ void CTangramCLRProxy::OnLoad(System::Object ^sender, System::EventArgs ^e)
 	pForm->Load -= theAppProxy.m_pOnLoad;
 }
 
-void CTangramCLRProxy::OnCLRHostExit() 
+void CTangramCLRProxy::OnCLRHostExit()
 {
 	Forms::Application::Exit();
 }
@@ -1047,7 +1049,7 @@ void* CTangramCLRProxy::Extend(CString strKey, CString strData, CString strFeatu
 		if (nPos != -1)
 		{
 			Object^ pObj = TangramCLR::Tangram::CreateObject(BSTR2STRING(strKey));
-			if (pObj&&pObj->GetType()->IsSubclassOf(Form::typeid))
+			if (pObj && pObj->GetType()->IsSubclassOf(Form::typeid))
 			{
 				Form^ pForm = (Form^)pObj;
 				pForm->Show();
@@ -1058,14 +1060,14 @@ void* CTangramCLRProxy::Extend(CString strKey, CString strData, CString strFeatu
 	{
 		int nPos = strKey.Find(_T(":"));
 		Form^ pParentForm = (Form^)Form::FromHandle((IntPtr)_wtol(strKey.Mid(nPos + 1)));
-		if (pParentForm&&pParentForm->IsMdiContainer)
+		if (pParentForm && pParentForm->IsMdiContainer)
 		{
 			strKey = strKey.Left(nPos);
 			nPos = strKey.Find(_T(","));
 			if (nPos != -1)
 			{
 				Object^ pObj = TangramCLR::Tangram::CreateObject(BSTR2STRING(strKey));
-				if (pObj&&pObj->GetType()->IsSubclassOf(Form::typeid))
+				if (pObj && pObj->GetType()->IsSubclassOf(Form::typeid))
 				{
 					Form^ pForm = (Form^)pObj;
 					pForm->MdiParent = pParentForm;
@@ -1079,13 +1081,13 @@ void* CTangramCLRProxy::Extend(CString strKey, CString strData, CString strFeatu
 	{
 		int nPos = strKey.Find(_T(":"));
 		Form^ pParentForm = (Form^)Form::FromHandle((IntPtr)_wtol(strKey.Mid(nPos + 1)));
-		if (pParentForm&&pParentForm->IsMdiContainer)
+		if (pParentForm && pParentForm->IsMdiContainer)
 		{
 			auto it = m_pProxy->m_mapTangramDesignedWindows.find(strData);
 			if (it != m_pProxy->m_mapTangramDesignedWindows.end())
 			{
 				HWND h = it->second;
-				if(::IsWindow(h))
+				if (::IsWindow(h))
 					::BringWindowToTop(h);
 				else
 				{
@@ -1094,7 +1096,7 @@ void* CTangramCLRProxy::Extend(CString strKey, CString strData, CString strFeatu
 					if (nPos != -1)
 					{
 						Object^ pObj = TangramCLR::Tangram::CreateObject(BSTR2STRING(strKey));
-						if (pObj&&pObj->GetType()->IsSubclassOf(Form::typeid))
+						if (pObj && pObj->GetType()->IsSubclassOf(Form::typeid))
 						{
 							Form^ pForm = (Form^)pObj;
 							if (pForm->IsMdiContainer)
@@ -1117,7 +1119,7 @@ void* CTangramCLRProxy::Extend(CString strKey, CString strData, CString strFeatu
 				if (nPos != -1)
 				{
 					Object^ pObj = TangramCLR::Tangram::CreateObject(BSTR2STRING(strKey));
-					if (pObj&&pObj->GetType()->IsSubclassOf(Form::typeid))
+					if (pObj && pObj->GetType()->IsSubclassOf(Form::typeid))
 					{
 						Form^ pForm = (Form^)pObj;
 						if (pForm->IsMdiContainer)
@@ -1147,7 +1149,7 @@ void* CTangramCLRProxy::Extend(CString strKey, CString strData, CString strFeatu
 			if (nPos != -1)
 			{
 				Object^ pObj = TangramCLR::Tangram::CreateObject(BSTR2STRING(strKey));
-				if (pObj&&pObj->GetType()->IsSubclassOf(Form::typeid))
+				if (pObj && pObj->GetType()->IsSubclassOf(Form::typeid))
 				{
 					Form^ pForm = (Form^)pObj;
 					HWND hWnd = (HWND)pForm->Handle.ToInt64();
@@ -1183,7 +1185,7 @@ void* CTangramCLRProxy::Extend(CString strKey, CString strData, CString strFeatu
 			}
 		}
 	}
-	
+
 	return nullptr;
 }
 
@@ -1202,7 +1204,7 @@ HRESULT CTangramCLRProxy::ActiveCLRMethod(BSTR bstrObjID, BSTR bstrMethod, BSTR 
 	return S_OK;
 }
 
-HRESULT CTangramCLRProxy::ActiveCLRMethod(IDispatch* pCLRObj, BSTR bstrMethod, BSTR bstrParam, BSTR bstrData)
+HRESULT CTangramCLRProxy::ActiveCLRMethod(IDispatch * pCLRObj, BSTR bstrMethod, BSTR bstrParam, BSTR bstrData)
 {
 	Object^ obj = Marshal::GetObjectForIUnknown((IntPtr)pCLRObj);
 	String^ strMethod = BSTR2STRING(bstrMethod);
@@ -1212,10 +1214,60 @@ HRESULT CTangramCLRProxy::ActiveCLRMethod(IDispatch* pCLRObj, BSTR bstrMethod, B
 	return S_OK;
 }
 
-IDispatch* CTangramCLRProxy::CreateCLRObj(BSTR bstrObjID)
+IDispatch* CTangramCLRProxy::CreateCLRObj(CString bstrObjID)
 {
+	if (bstrObjID.Find(_T("<")) != -1)
+	{
+		CTangramXmlParse m_Parse;
+		if (m_Parse.LoadXml(bstrObjID))
+		{
+			m_strCurrentWinFormTemplate = bstrObjID;
+			CString strObjID = m_Parse.attr(_T("objid"),_T(""));
+			if (strObjID != _T(""))
+			{
+				Object^ pObj = TangramCLR::Tangram::CreateObject(BSTR2STRING(strObjID));
+
+				if (pObj != nullptr)
+				{
+					if (pObj->GetType()->IsSubclassOf(Form::typeid))
+					{
+						CString strCaption = m_Parse.attr(_T("caption"),_T(""));
+						Form^ thisForm = (Form^)pObj;
+						if (m_pCurrentPForm)
+						{
+							thisForm->MdiParent = m_pCurrentPForm;
+							m_pCurrentPForm = nullptr;
+						}
+						else
+						{
+							if (m_Parse.attrBool(_T("mainwindow")))
+								theApp.m_pTangramProxyBase->m_hMainWnd = (HWND)thisForm->Handle.ToPointer();
+						}
+						if (strCaption != _T(""))
+							thisForm->Text = BSTR2STRING(strCaption);
+						thisForm->Show();
+						if (m_pCurrentPForm)
+						{
+						}
+						else
+						{
+							if (m_Parse.attrBool(_T("mainwindow")))
+								theApp.m_pTangramProxyBase->m_hMainWnd = (HWND)thisForm->Handle.ToPointer();
+						}
+						CTangramXmlParse* pChildForms = m_Parse.GetChild(_T("childforms"));
+						if (pChildForms)
+						{
+							::SendMessage((HWND)thisForm->Handle.ToPointer(), WM_TANGRAMMSG, (WPARAM)pChildForms, 20190601);
+						}
+					}
+					return (IDispatch*)Marshal::GetIUnknownForObject(pObj).ToPointer();
+				}
+			}
+		}
+		return nullptr;
+	}
 	Object^ pObj = TangramCLR::Tangram::CreateObject(BSTR2STRING(bstrObjID));
-	::SysFreeString(bstrObjID);
+
 	if (pObj != nullptr)
 	{
 		if (pObj->GetType()->IsSubclassOf(Form::typeid))
@@ -1227,24 +1279,24 @@ IDispatch* CTangramCLRProxy::CreateCLRObj(BSTR bstrObjID)
 	return nullptr;
 }
 
-Control^ CTangramCLRProxy::GetCanSelect(Control^ ctrl, bool direct)
+Control^ CTangramCLRProxy::GetCanSelect(Control ^ ctrl, bool direct)
 {
 	int nCount = ctrl->Controls->Count;
 	Control^ pCtrl = nullptr;
 	if (nCount)
 	{
-		for (int i = direct ? (nCount - 1):0; direct ? i >= 0 : i <= nCount - 1; direct ? i-- : i++)
+		for (int i = direct ? (nCount - 1) : 0; direct ? i >= 0 : i <= nCount - 1; direct ? i-- : i++)
 		{
 			pCtrl = ctrl->Controls[i];
-if (direct && pCtrl->TabStop && pCtrl->Visible && pCtrl->Enabled)
-return pCtrl;
-pCtrl = GetCanSelect(pCtrl, direct);
-if (pCtrl != nullptr)
-return pCtrl;
+			if (direct && pCtrl->TabStop && pCtrl->Visible && pCtrl->Enabled)
+				return pCtrl;
+			pCtrl = GetCanSelect(pCtrl, direct);
+			if (pCtrl != nullptr)
+				return pCtrl;
 		}
 	}
-	else if ((ctrl->CanSelect || ctrl->TabStop) && ctrl->Visible&&ctrl->Enabled)
-	return ctrl;
+	else if ((ctrl->CanSelect || ctrl->TabStop) && ctrl->Visible && ctrl->Enabled)
+		return ctrl;
 	return nullptr;
 }
 
@@ -1253,7 +1305,7 @@ HRESULT CTangramCLRProxy::ProcessCtrlMsg(HWND hCtrl, bool bShiftKey)
 	Control^ pCtrl = (Control^)Control::FromHandle((IntPtr)hCtrl);
 	if (pCtrl == nullptr)
 		return S_FALSE;
-	Control^ pChildCtrl = GetCanSelect(pCtrl, !bShiftKey);
+	Control ^ pChildCtrl = GetCanSelect(pCtrl, !bShiftKey);
 
 	if (pChildCtrl)
 		pChildCtrl->Select();
@@ -1270,7 +1322,7 @@ BOOL CTangramCLRProxy::ProcessFormMsg(HWND hFormWnd, LPMSG lpMSG, int nMouseButt
 	Msg.Msg = lpMSG->message;
 	Msg.WParam = (IntPtr)((LONG)lpMSG->wParam);
 	Msg.LParam = (IntPtr)lpMSG->lParam;
-	Form^ pForm = static_cast<Form^>(Ctrl);
+	Form ^ pForm = static_cast<Form^>(Ctrl);
 	if (pForm == nullptr)
 		return Ctrl->PreProcessMessage(Msg);
 	if (pForm->IsMdiContainer)
@@ -1295,7 +1347,7 @@ HWND CTangramCLRProxy::GetHwnd(HWND parent, int x, int y, int width, int height)
 	return nullptr;
 }
 
-void CTangramCLRProxy::SelectNode(IWndNode* pNode)
+void CTangramCLRProxy::SelectNode(IWndNode * pNode)
 {
 	if (pNode == nullptr)
 	{
@@ -1331,7 +1383,7 @@ void CTangramCLRProxy::SelectNode(IWndNode* pNode)
 	}
 }
 
-IDispatch* CTangramCLRProxy::TangramCreateObject(BSTR bstrObjID, long hParent, IWndNode* pHostNode)
+IDispatch* CTangramCLRProxy::TangramCreateObject(BSTR bstrObjID, HWND hParent, IWndNode * pHostNode)
 {
 	String^ strID = BSTR2STRING(bstrObjID);
 	Object^ _pObj = TangramCLR::Tangram::CreateObject(strID);
@@ -1348,11 +1400,11 @@ IDispatch* CTangramCLRProxy::TangramCreateObject(BSTR bstrObjID, long hParent, I
 	if (_pObj->GetType()->IsSubclassOf(Control::typeid))
 	{
 		Control^ pObj = static_cast<Control^>(_pObj);
-		if (pObj != nullptr&&pHostNode)
+		if (pObj != nullptr && pHostNode)
 		{
 			__int64 h = 0;
 			pHostNode->get_Handle(&h);
-			if(h)
+			if (h)
 				::SendMessage((HWND)h, WM_TANGRAMMSG, 0, 19920612);
 			IWndNode* pRootNode = NULL;
 			pHostNode->get_RootNode(&pRootNode);
@@ -1369,6 +1421,8 @@ IDispatch* CTangramCLRProxy::TangramCreateObject(BSTR bstrObjID, long hParent, I
 				m_pPropertyGrid->PropertySort = PropertySort::Alphabetical;
 			}
 			HWND hWnd = (HWND)pObj->Handle.ToInt64();
+			IDispatch * pDisp = (IDispatch*)(Marshal::GetIUnknownForObject(pObj).ToInt64());
+			_pNode->m_pHostObj = pObj;
 			if (pObj->GetType()->IsSubclassOf(Form::typeid))
 			{
 				::SetParent(hWnd, (HWND)hParent);
@@ -1377,13 +1431,12 @@ IDispatch* CTangramCLRProxy::TangramCreateObject(BSTR bstrObjID, long hParent, I
 					m_mapForm.erase(it);
 				m_pProxy->m_hFormNodeWnd = hWnd;
 				::SetWindowLongPtr(hWnd, GWL_STYLE, ::GetWindowLongPtr(hWnd, GWL_STYLE) & ~(WS_SIZEBOX | WS_BORDER | WS_OVERLAPPED | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_THICKFRAME | WS_CAPTION) | WS_CHILD | WS_VISIBLE);
-				::SetWindowLongPtr(hWnd, GWL_EXSTYLE, ::GetWindowLongPtr(hWnd, GWL_EXSTYLE)& ~(WS_EX_APPWINDOW/*|WS_EX_CLIENTEDGE*/));
+				::SetWindowLongPtr(hWnd, GWL_EXSTYLE, ::GetWindowLongPtr(hWnd, GWL_EXSTYLE) & ~(WS_EX_APPWINDOW/*|WS_EX_CLIENTEDGE*/));
 				((Form^)pObj)->Show();
+				return pDisp;
 			}
-			IDispatch* pDisp = (IDispatch*)(Marshal::GetIUnknownForObject(pObj).ToInt64());
-			_pNode->m_pHostObj = pObj;
-			if( m_pProxy->IsMDIFrameNode(pHostNode)==false&&bProperty==false)
-				InitTangramNode(pHostNode, pObj, true);
+			//if (m_pProxy->IsMDIFrameNode(pHostNode) == false && bProperty == false)
+			//	InitTangramNode(pHostNode, pObj, true);
 			return pDisp;
 		}
 	}
@@ -1400,7 +1453,7 @@ IDispatch* CTangramCLRProxy::TangramCreateObject(BSTR bstrObjID, long hParent, I
 				_pNode->m_pHostObj = pElementHost;
 				return pDisp;
 			}
-			catch (System::Exception^ ex)
+			catch (System::Exception ^ ex)
 			{
 				Debug::WriteLine(L"Tangram WPFControlWrapper Exception 1: " + ex->Message);
 				Debug::WriteLine(L"Tangram WPFControlWrapper Exception 1: " + ex->InnerException->Message);
@@ -1415,7 +1468,7 @@ int CTangramCLRProxy::IsWinForm(HWND hWnd)
 	if (hWnd == 0)
 		return false;
 	IntPtr handle = (IntPtr)hWnd;
-	Control^  pControl = Control::FromHandle(handle);
+	Control ^ pControl = Control::FromHandle(handle);
 	if (pControl != nullptr)
 	{
 		if (pControl->GetType()->IsSubclassOf(Form::typeid))
@@ -1426,7 +1479,7 @@ int CTangramCLRProxy::IsWinForm(HWND hWnd)
 			else
 				return 1;
 		}
-		else if (::GetWindowLong(hWnd, GWL_EXSTYLE)&WS_EX_APPWINDOW)
+		else if (::GetWindowLong(hWnd, GWL_EXSTYLE) & WS_EX_APPWINDOW)
 		{
 			int nCount = pControl->Controls->Count;
 			String^ strName = L"";
@@ -1445,7 +1498,7 @@ int CTangramCLRProxy::IsWinForm(HWND hWnd)
 	return 0;
 }
 
-IDispatch* CTangramCLRProxy::GetCLRControl(IDispatch* CtrlDisp, BSTR bstrNames)
+IDispatch* CTangramCLRProxy::GetCLRControl(IDispatch * CtrlDisp, BSTR bstrNames)
 {
 	CString strNames = OLE2T(bstrNames);
 	if (strNames != _T(""))
@@ -1514,7 +1567,7 @@ IDispatch* CTangramCLRProxy::GetCLRControl(IDispatch* CtrlDisp, BSTR bstrNames)
 	return NULL;
 }
 
-BSTR CTangramCLRProxy::GetCtrlName(IDispatch* _pCtrl)
+BSTR CTangramCLRProxy::GetCtrlName(IDispatch * _pCtrl)
 {
 	Control^ pCtrl = (Control^)Marshal::GetObjectForIUnknown((IntPtr)_pCtrl);
 	if (pCtrl != nullptr)
@@ -1522,13 +1575,13 @@ BSTR CTangramCLRProxy::GetCtrlName(IDispatch* _pCtrl)
 	return L"";
 }
 
-void CTangramCLRProxy::ReleaseTangramObj(IDispatch* pDisp)
+void CTangramCLRProxy::ReleaseTangramObj(IDispatch * pDisp)
 {
 	LONGLONG nValue = (LONGLONG)pDisp;
 	_removeObject(nValue);
 }
 
-HWND CTangramCLRProxy::GetMDIClientHandle(IDispatch* pMDICtrl)
+HWND CTangramCLRProxy::GetMDIClientHandle(IDispatch * pMDICtrl)
 {
 	Form^ pCtrl = (Form^)Marshal::GetObjectForIUnknown((IntPtr)pMDICtrl);
 	if (pCtrl != nullptr)
@@ -1540,7 +1593,7 @@ HWND CTangramCLRProxy::GetMDIClientHandle(IDispatch* pMDICtrl)
 	return NULL;
 }
 
-IDispatch* CTangramCLRProxy::GetCtrlByName(IDispatch* CtrlDisp, BSTR bstrName, bool bFindInChild)
+IDispatch* CTangramCLRProxy::GetCtrlByName(IDispatch * CtrlDisp, BSTR bstrName, bool bFindInChild)
 {
 	try
 	{
@@ -1548,7 +1601,7 @@ IDispatch* CTangramCLRProxy::GetCtrlByName(IDispatch* CtrlDisp, BSTR bstrName, b
 		if (pCtrl != nullptr)
 		{
 			cli::array<Control^, 1>^ pArray = pCtrl->Controls->Find(BSTR2STRING(bstrName), bFindInChild);
-			if (pArray != nullptr&&pArray->Length)
+			if (pArray != nullptr && pArray->Length)
 				return (IDispatch*)Marshal::GetIDispatchForObject(pArray[0]).ToPointer();
 		}
 
@@ -1560,17 +1613,17 @@ IDispatch* CTangramCLRProxy::GetCtrlByName(IDispatch* CtrlDisp, BSTR bstrName, b
 	return NULL;
 }
 
-int CTangramCLRProxy::IsSpecifiedType(IUnknown* pUnknown, BSTR bstrName)
+int CTangramCLRProxy::IsSpecifiedType(IUnknown * pUnknown, BSTR bstrName)
 {
 	Object^ pObj = Marshal::GetObjectForIUnknown((IntPtr)pUnknown);
-	if (pObj&&pObj->GetType()->FullName->Equals(BSTR2STRING(bstrName)))
+	if (pObj && pObj->GetType()->FullName->Equals(BSTR2STRING(bstrName)))
 	{
 		return 1;
 	}
 	return 0;
 }
 
-void CTangramCLRProxy::SelectObj(IDispatch* CtrlDisp)
+void CTangramCLRProxy::SelectObj(IDispatch * CtrlDisp)
 {
 	try
 	{
@@ -1581,13 +1634,13 @@ void CTangramCLRProxy::SelectObj(IDispatch* CtrlDisp)
 		}
 
 	}
-	catch (System::Exception^ e)
+	catch (System::Exception ^ e)
 	{
 		String^ strInfo = e->Message;
 	}
 }
 
-BSTR CTangramCLRProxy::GetCtrlValueByName(IDispatch* CtrlDisp, BSTR bstrName, bool bFindInChild)
+BSTR CTangramCLRProxy::GetCtrlValueByName(IDispatch * CtrlDisp, BSTR bstrName, bool bFindInChild)
 {
 	try
 	{
@@ -1595,7 +1648,7 @@ BSTR CTangramCLRProxy::GetCtrlValueByName(IDispatch* CtrlDisp, BSTR bstrName, bo
 		if (pCtrl != nullptr)
 		{
 			cli::array<Control^, 1>^ pArray = pCtrl->Controls->Find(BSTR2STRING(bstrName), bFindInChild);
-			if (pArray != nullptr&&pArray->Length)
+			if (pArray != nullptr && pArray->Length)
 			{
 				return STRING2BSTR(pArray[0]->Text);
 			}
@@ -1608,7 +1661,7 @@ BSTR CTangramCLRProxy::GetCtrlValueByName(IDispatch* CtrlDisp, BSTR bstrName, bo
 	return NULL;
 }
 
-void CTangramCLRProxy::SetCtrlValueByName(IDispatch* CtrlDisp, BSTR bstrName, bool bFindInChild, BSTR strVal)
+void CTangramCLRProxy::SetCtrlValueByName(IDispatch * CtrlDisp, BSTR bstrName, bool bFindInChild, BSTR strVal)
 {
 	try
 	{
@@ -1616,7 +1669,7 @@ void CTangramCLRProxy::SetCtrlValueByName(IDispatch* CtrlDisp, BSTR bstrName, bo
 		if (pCtrl != nullptr)
 		{
 			cli::array<Control^, 1>^ pArray = pCtrl->Controls->Find(BSTR2STRING(bstrName), bFindInChild);
-			if (pArray != nullptr&&pArray->Length)
+			if (pArray != nullptr && pArray->Length)
 			{
 				pArray[0]->Text = BSTR2STRING(strVal);
 				return;
@@ -1629,7 +1682,7 @@ void CTangramCLRProxy::SetCtrlValueByName(IDispatch* CtrlDisp, BSTR bstrName, bo
 	}
 }
 
-HWND CTangramCLRProxy::GetCtrlHandle(IDispatch* _pCtrl)
+HWND CTangramCLRProxy::GetCtrlHandle(IDispatch * _pCtrl)
 {
 	Control^ pCtrl = (Control^)Marshal::GetObjectForIUnknown((IntPtr)_pCtrl);
 	if (pCtrl != nullptr)
@@ -1637,7 +1690,7 @@ HWND CTangramCLRProxy::GetCtrlHandle(IDispatch* _pCtrl)
 	return 0;
 }
 
-BSTR CTangramCLRProxy::GetCtrlType(IDispatch* _pCtrl)
+BSTR CTangramCLRProxy::GetCtrlType(IDispatch * _pCtrl)
 {
 	Control^ pCtrl = (Control^)Marshal::GetObjectForIUnknown((IntPtr)_pCtrl);
 	if (pCtrl != nullptr)
@@ -1654,7 +1707,7 @@ IDispatch* CTangramCLRProxy::GetCtrlFromHandle(HWND hWnd)
 	return nullptr;
 }
 
-HWND CTangramCLRProxy::IsCtrlCanNavigate(IDispatch* ctrl)
+HWND CTangramCLRProxy::IsCtrlCanNavigate(IDispatch * ctrl)
 {
 	Control^ pCtrl = (Control^)Marshal::GetObjectForIUnknown((IntPtr)ctrl);
 	if (pCtrl != nullptr)
@@ -1665,7 +1718,7 @@ HWND CTangramCLRProxy::IsCtrlCanNavigate(IDispatch* ctrl)
 	return 0;
 }
 
-void CTangramCLRProxy::TangramAction(BSTR bstrXml, IWndNode* pNode)
+void CTangramCLRProxy::TangramAction(BSTR bstrXml, IWndNode * pNode)
 {
 	CString strXml = OLE2T(bstrXml);
 	if (strXml != _T(""))
@@ -1690,16 +1743,16 @@ void CTangramCLRProxy::TangramAction(BSTR bstrXml, IWndNode* pNode)
 						}
 						break;
 					default:
+					{
+						CString strID = m_Parse.attr(_T("ObjID"), _T(""));
+						CString strMethod = m_Parse.attr(_T("Method"), _T(""));
+						if (strID != _T("") && strMethod != _T(""))
 						{
-							CString strID = m_Parse.attr(_T("ObjID"), _T(""));
-							CString strMethod = m_Parse.attr(_T("Method"), _T(""));
-							if (strID != _T("") && strMethod != _T(""))
-							{
-								cli::array<Object^, 1>^ pObjs = { BSTR2STRING(strXml), pWindowNode };
-								TangramCLR::Tangram::ActiveMethod(BSTR2STRING(strID), BSTR2STRING(strMethod), pObjs);
-							}
+							cli::array<Object^, 1>^ pObjs = { BSTR2STRING(strXml), pWindowNode };
+							TangramCLR::Tangram::ActiveMethod(BSTR2STRING(strID), BSTR2STRING(strMethod), pObjs);
 						}
-						break;
+					}
+					break;
 					}
 				}
 			}
@@ -1707,20 +1760,20 @@ void CTangramCLRProxy::TangramAction(BSTR bstrXml, IWndNode* pNode)
 	}
 }
 
-bool CTangramCLRProxy::_insertObject(Object^ key, Object^ val)
+bool CTangramCLRProxy::_insertObject(Object ^ key, Object ^ val)
 {
 	Hashtable^ htObjects = (Hashtable^)m_htObjects;
 	htObjects[key] = val;
 	return true;
 }
 
-Object^ CTangramCLRProxy::_getObject(Object^ key)
+Object^ CTangramCLRProxy::_getObject(Object ^ key)
 {
 	Hashtable^ htObjects = (Hashtable^)m_htObjects;
 	return htObjects[key];
 }
 
-bool CTangramCLRProxy::_removeObject(Object^ key)
+bool CTangramCLRProxy::_removeObject(Object ^ key)
 {
 	Hashtable^ htObjects = (Hashtable^)m_htObjects;
 
@@ -1763,13 +1816,13 @@ void CTangramNodeEvent::OnDestroy()
 	this->DispEventUnadvise(m_pWndNode);
 }
 
-void CTangramNodeEvent::OnDocumentComplete(IDispatch* pDocdisp, BSTR bstrUrl)
+void CTangramNodeEvent::OnDocumentComplete(IDispatch * pDocdisp, BSTR bstrUrl)
 {
-	if (m_pWndNode!=nullptr)
+	if (m_pWndNode != nullptr)
 		m_pTangramNodeCLREvent->OnDocumentComplete(pDocdisp, bstrUrl);
 }
 
-void CTangramNodeEvent::OnNodeAddInCreated(IDispatch* pAddIndisp, BSTR bstrAddInID, BSTR bstrAddInXml)
+void CTangramNodeEvent::OnNodeAddInCreated(IDispatch * pAddIndisp, BSTR bstrAddInID, BSTR bstrAddInXml)
 {
 	if (m_pWndNode != nullptr)
 		m_pTangramNodeCLREvent->OnNodeAddInCreated(pAddIndisp, bstrAddInID, bstrAddInXml);
@@ -1781,7 +1834,7 @@ void CTangramCLRApp::OnTangramClose()
 	TangramCLR::Tangram::GetTangram()->Fire_OnClose();
 	FormCollection^ pCollection = Forms::Application::OpenForms;
 	int nCount = pCollection->Count;
-	while (pCollection->Count>0)
+	while (pCollection->Count > 0)
 	{
 		Form^ pForm = pCollection[0];
 		pForm->Close();
@@ -1791,14 +1844,14 @@ void CTangramCLRApp::OnTangramClose()
 		theApp.m_pTangram->put_AppKeyValue(CComBSTR(L"CLRProxy"), CComVariant((LONGLONG)0));
 	}
 	Object^ pPro = (Object^)theAppProxy.m_pPropertyGrid;
-	if (pPro&&theAppProxy.m_pPropertyGrid->SelectedObject)
+	if (pPro && theAppProxy.m_pPropertyGrid->SelectedObject)
 		theAppProxy.m_pPropertyGrid->SelectedObject = nullptr;
 	//EnterCriticalSection(&theApp.m_csTaskRecycleCriticalSection);
 	//LeaveCriticalSection(&theApp.m_csTaskRecycleCriticalSection);
 	AtlTrace(_T("*************End CTangramCLRApp::OnClose:  ****************\n"));
 }
 
-void CTangramCLRApp::OnExtendComplete(long hWnd, BSTR bstrUrl, IWndNode* pRootNode)
+void CTangramCLRApp::OnExtendComplete(long hWnd, BSTR bstrUrl, IWndNode * pRootNode)
 {
 	TangramCLR::Tangram^ pManager = TangramCLR::Tangram::GetTangram();
 	WndNode^ _pRootNode = theAppProxy._createObject<IWndNode, WndNode>(pRootNode);
@@ -1821,7 +1874,7 @@ void __stdcall  CWndPageClrEvent::OnDestroy()
 		delete m_pPage;
 }
 
-void __stdcall  CWndPageClrEvent::OnTabChange(IWndNode* sender, int nActivePage, int nOldPage)
+void __stdcall  CWndPageClrEvent::OnTabChange(IWndNode * sender, int nActivePage, int nOldPage)
 {
 	Object^ pObj = m_pPage;
 	TangramCLR::WndPage^ pPage = static_cast<TangramCLR::WndPage^>(pObj);
@@ -1829,14 +1882,14 @@ void __stdcall  CWndPageClrEvent::OnTabChange(IWndNode* sender, int nActivePage,
 	pPage->Fire_OnTabChange(pWindowNode, nActivePage, nOldPage);
 }
 
-void CWndPageClrEvent::OnInitialize(IDispatch* pHtmlWnd, BSTR bstrUrl)
+void CWndPageClrEvent::OnInitialize(IDispatch * pHtmlWnd, BSTR bstrUrl)
 {
 	Object^ pObj = m_pPage;
 	TangramCLR::WndPage^ pPage = static_cast<TangramCLR::WndPage^>(pObj);
 	pPage->Fire_OnDocumentComplete(pPage, Marshal::GetObjectForIUnknown((IntPtr)pHtmlWnd), BSTR2STRING(bstrUrl));
 }
 
-void CWndPageClrEvent::OnIPCMsg(IWndFrame* sender, BSTR bstrType, BSTR bstrContent, BSTR bstrFeature)
+void CWndPageClrEvent::OnIPCMsg(IWndFrame * sender, BSTR bstrType, BSTR bstrContent, BSTR bstrFeature)
 {
 	Object^ pObj = m_pPage;
 	TangramCLR::WndPage^ pPage = static_cast<TangramCLR::WndPage^>(pObj);
@@ -1844,14 +1897,14 @@ void CWndPageClrEvent::OnIPCMsg(IWndFrame* sender, BSTR bstrType, BSTR bstrConte
 	pPage->Fire_OnIPCMsg(pWndFrame, BSTR2STRING(bstrType), BSTR2STRING(bstrContent), BSTR2STRING(bstrFeature));
 }
 
-void CTangramCLRProxy::OnApplicationExit(System::Object ^sender, System::EventArgs ^e)
+void CTangramCLRProxy::OnApplicationExit(System::Object ^ sender, System::EventArgs ^ e)
 {
-	for each (KeyValuePair<String^, TangramAppProxy^>^ obj in TangramCLR::Tangram::m_pTangramAppProxyDic)
+	for each (KeyValuePair<String^, TangramAppProxy^> ^ obj in TangramCLR::Tangram::m_pTangramAppProxyDic)
 	{
 		if (obj->Value != nullptr)
 		{
 			TangramAppProxy^ proxy = obj->Value;
-			if (proxy->m_pTangramAppProxy&&::IsWindow(proxy->m_pTangramAppProxy->m_hMainWnd))
+			if (proxy->m_pTangramAppProxy && ::IsWindow(proxy->m_pTangramAppProxy->m_hMainWnd))
 				::DestroyWindow(proxy->m_pTangramAppProxy->m_hMainWnd);
 		}
 	}
@@ -1867,7 +1920,7 @@ CTangramWPFObjWrapper::~CTangramWPFObjWrapper(void)
 	}
 }
 
-void CTangramWPFObjWrapper::ShowVisual(BOOL bShow) 
+void CTangramWPFObjWrapper::ShowVisual(BOOL bShow)
 {
 	if (bShow)
 	{
@@ -1884,7 +1937,7 @@ void CTangramWPFObjWrapper::Focusable(BOOL bFocus)
 	m_pUIElement->Focusable = bFocus;
 }
 
-void CTangramWPFObjWrapper::InvalidateVisual() 
+void CTangramWPFObjWrapper::InvalidateVisual()
 {
 	if (m_pUIElement)
 	{
@@ -1897,7 +1950,7 @@ BOOL CTangramWPFObjWrapper::IsVisible()
 	return m_pUIElement->IsVisible;
 }
 
-CTangramWPFObj* CTangramWPFObjWrapper::CreateControl(Type^ type, HWND parent, DWORD style, int x, int y, int width, int height)
+CTangramWPFObj* CTangramWPFObjWrapper::CreateControl(Type ^ type, HWND parent, DWORD style, int x, int y, int width, int height)
 {
 	m_pUIElement = (FrameworkElement^)Activator::CreateInstance(type);
 	m_pDisp = (IDispatch*)(System::Runtime::InteropServices::Marshal::GetIUnknownForObject(m_pUIElement).ToInt64());
@@ -1920,7 +1973,7 @@ CTangramWPFObj* CTangramWPFObjWrapper::CreateControl(Type^ type, HWND parent, DW
 }
 
 
-void CTangramCLRProxy::OnSelectedObjectsChanged(Object ^sender, EventArgs ^e)
+void CTangramCLRProxy::OnSelectedObjectsChanged(Object ^ sender, EventArgs ^ e)
 {
 	if (theAppProxy.m_pPropertyGrid->SelectedObject != nullptr)
 	{
@@ -1951,7 +2004,7 @@ void CTangramCLRProxy::OnSelectedObjectsChanged(Object ^sender, EventArgs ^e)
 					::SetWindowLongPtr(hWnd, GWLP_USERDATA, nHandle);
 				}
 			}
-			else if(s == L"System.Windows.Forms.UserControl")
+			else if (s == L"System.Windows.Forms.UserControl")
 			{
 				nType = 1;
 				UserControl^ pCtrl = (UserControl^)theAppProxy.m_pPropertyGrid->SelectedObject;
@@ -1982,7 +2035,7 @@ void CTangramCLRProxy::OnSelectedObjectsChanged(Object ^sender, EventArgs ^e)
 	}
 }
 
-void CTangramCLRProxy::OnControlAdded(Object ^sender, ControlEventArgs ^e)
+void CTangramCLRProxy::OnControlAdded(Object ^ sender, ControlEventArgs ^ e)
 {
 	String^ strType = e->Control->GetType()->ToString();//System.Windows.Forms.MdiClient
 	if (strType == L"System.Windows.Forms.MdiClient")
@@ -1994,7 +2047,7 @@ void CTangramCLRProxy::OnControlAdded(Object ^sender, ControlEventArgs ^e)
 	}
 }
 
-void CTangramCLRProxy::OnControlRemoved(Object ^sender, ControlEventArgs ^e)
+void CTangramCLRProxy::OnControlRemoved(Object ^ sender, ControlEventArgs ^ e)
 {
 	String^ strType = e->Control->GetType()->ToString();
 	if (strType == L"System.Windows.Forms.MdiClient")
@@ -2004,7 +2057,7 @@ void CTangramCLRProxy::OnControlRemoved(Object ^sender, ControlEventArgs ^e)
 	}
 }
 
-void CTangramCLRProxy::OnHandleDestroyed(Object ^sender, EventArgs ^e)
+void CTangramCLRProxy::OnHandleDestroyed(Object ^ sender, EventArgs ^ e)
 {
 	Form^ pForm = (Form^)sender;
 	HWND hWnd = (HWND)pForm->Handle.ToInt64();
@@ -2015,7 +2068,7 @@ void CTangramCLRProxy::OnHandleDestroyed(Object ^sender, EventArgs ^e)
 	}
 }
 
-void CTangramCLRProxy::OnClick(Object ^sender, EventArgs ^e)
+void CTangramCLRProxy::OnClick(Object ^ sender, EventArgs ^ e)
 {
 	if (sender->GetType()->IsSubclassOf(ToolStripItem::typeid))
 	{
@@ -2027,13 +2080,32 @@ void CTangramCLRProxy::OnClick(Object ^sender, EventArgs ^e)
 			{
 				form = (Form^)button->OwnerItem->Owner->Parent;
 			}
-			if (form&&form->IsMdiContainer)
-				TangramCLR::Tangram::ExtendMDIClient(form, L"newdoc", L"");
+			if (form && form->IsMdiContainer)
+			{
+				theAppProxy.m_pCurrentPForm = form;
+				HWND hForm = (HWND)form->Handle.ToPointer();
+				CMDIChildFormInfo* pInfo = (CMDIChildFormInfo*)::SendMessage(hForm, WM_TANGRAMMSG, 0, 20190602);
+				if (pInfo)
+				{
+					TangramNewChildForm^ pTangramNewChildForm = gcnew TangramNewChildForm();
+					pTangramNewChildForm->Tag = L"__NEWVERSION__";
+					pTangramNewChildForm->m_pParent = form;
+					ListView^ pList = pTangramNewChildForm->GetListView();
+					for (auto it : pInfo->m_mapFormsInfo)
+					{
+						pList->Items->Add(BSTR2STRING(it.first))->Tag = BSTR2STRING(it.second);
+					}
+					pTangramNewChildForm->Text = L"Please Select a New Form Template:";
+					pTangramNewChildForm->StartPosition = FormStartPosition::CenterScreen;
+					pTangramNewChildForm->ShowDialog(form);
+				}
+				//TangramCLR::Tangram::ExtendMDIClient(form, L"newdoc", L"");
+			}
 			return;
 		}
 
 	}
 	Form^ form = (Form^)Form::FromHandle((IntPtr)::GetActiveWindow());
-	if(form&&form->IsMdiContainer)
+	if (form && form->IsMdiContainer)
 		TangramCLR::Tangram::ExtendMDIClient(form, L"newdoc", L"");
 }

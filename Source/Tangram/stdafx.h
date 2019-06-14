@@ -109,15 +109,34 @@ using namespace std;
 #include <ppltasks.h>
 using namespace concurrency;
 
+class CBKWnd;
+class CWndNode;
+class CWndPage;
+class CWPFView;
+class CNodeWnd;
+class CTangram;
+class CWndFrame;
+class CHelperWnd;
 class CEventProxy;
 class CJSProxyObj;
-class CWndNode;
-class CBKWnd;
-class CWndFrame;
-class CWebPageExtender;
-class CWndPage;
+class CEclipseWnd;
+class CTangramDoc;
 class CTangramApp;
+class CWndNodeEvents;
+class CTangramDocWnd;
+class CTangramTabCtrl;
+class CTangramAppCtrl;
+class CTangramDocFrame;
+class CWebPageExtender;
+class CTangramListView;
+class CTangramEventObj;
+class CTangramEventObj;
+class CTangramDocFrame;
+class CTangramMDIMainWnd;
 class CWndNodeCollection;
+class CTangramCommonCtrl;
+class CTangramHtmlTreeWnd;
+class CTangramAFXHelperWnd;
 
 typedef vector<CWndNode*> CTangramNodeVector;
 

@@ -61,12 +61,12 @@ namespace TangramDesigner {
 		}
 
 	private: 
-		ComboBox^  comboBoxCLRCtrl;
 		Label^  label1;
-		Button^  btnLoadCtrl;
 		Button^  btnCreate;
+		Button^  btnLoadCtrl;
 		String^ m_strCurAssembly;
 		String^ m_strCurAssemblys;
+		ComboBox^  comboBoxCLRCtrl;
 		Dictionary<String^, String^>^	m_pTangramAssemblyDic = gcnew Dictionary<String^, String^>();
 		/// <summary>
 		/// Required designer variable.

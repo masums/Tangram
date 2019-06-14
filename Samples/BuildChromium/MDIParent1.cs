@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace WindowsFormsApp1
+namespace BuildChromium
 {
     public partial class MDIParent1 : Form
     {
@@ -21,10 +21,10 @@ namespace WindowsFormsApp1
 
         private void ShowNewForm(object sender, EventArgs e)
         {
-            //Form childForm = new Form();
-            //childForm.MdiParent = this;
-            //childForm.Text = "Window " + childFormNumber++;
-            //childForm.Show();
+            Form childForm = new Form();
+            childForm.MdiParent = this;
+            childForm.Text = "Window " + childFormNumber++;
+            childForm.Show();
         }
 
         private void OpenFile(object sender, EventArgs e)
