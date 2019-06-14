@@ -25,52 +25,46 @@ Cloud-Desktop application deploys the assembly of desktop applications to the cl
 Prerequisites:
 
 - Windows 10
-- .NET Framework 4.0 or later
-- *Optional:* Visual Studio 2019
+- Visual Studio 2017 or 2019
   - Desktop development with C++
   - .NET desktop development
 
-Download **tangram_sdk_vX.X.X.msi** and install as an administrator.
-
-Download and unzip **tangram_vX.X.X_x64.zip** to a location of your choice. The version number should be the same as the SDK. The directory structure should look similar to:
+Download and unzip **[ChromeAppSDK.zip](<https://github.com/TangramDev/Tangram/releases>)** to a location of your choice. The directory structure should look similar to:
 
 ```
-C:\test\tangram
-λ ls -l
-total 4960
-drwxr-xr-x 1 codemeow 197121       0 May 30 15:01 74.0.3729.108/
--rwxr-xr-x 1 codemeow 197121 1852928 May 30 15:01 tangramchromecore.dll*
--rwxr-xr-x 1 codemeow 197121  532480 May 30 15:01 tangramclr.dll*
--rwxr-xr-x 1 codemeow 197121 2339840 May 30 15:01 tangramcore.dll*
--rwxr-xr-x 1 codemeow 197121  338432 May 30 15:01 tangraminit.dll*
-
-C:\test\tangram\74.0.3729.108
-λ ls -l
-total 191177
--rw-r--r-- 1 codemeow 197121      226 May 30 15:01 74.0.3729.108.manifest
--rwxr-xr-x 1 codemeow 197121 61646848 May 30 15:01 chrome.dll*
--rw-r--r-- 1 codemeow 197121  1222161 May 30 15:01 chrome_100_percent.pak
--rw-r--r-- 1 codemeow 197121  1556306 May 30 15:01 chrome_200_percent.pak
--rwxr-xr-x 1 codemeow 197121 89293312 May 30 15:01 chrome_child.dll*
--rwxr-xr-x 1 codemeow 197121   750080 May 30 15:01 chrome_elf.dll*
--rwxr-xr-x 1 codemeow 197121   779776 May 30 15:01 chrome_watcher.dll*
--rwxr-xr-x 1 codemeow 197121  4493352 May 30 15:01 d3dcompiler_47.dll*
-drwxr-xr-x 1 codemeow 197121        0 May 30 15:01 Extensions/
--rw-r--r-- 1 codemeow 197121 10326064 May 30 15:01 icudtl.dat
--rwxr-xr-x 1 codemeow 197121   131072 May 30 15:01 libegl.dll*
--rwxr-xr-x 1 codemeow 197121  5516288 May 30 15:01 libglesv2.dll*
-drwxr-xr-x 1 codemeow 197121        0 May 30 15:01 Locales/
-drwxr-xr-x 1 codemeow 197121        0 May 30 15:01 MEIPreload/
--rw-r--r-- 1 codemeow 197121    83217 May 30 15:01 natives_blob.bin
--rwxr-xr-x 1 codemeow 197121   740864 May 30 15:01 notification_helper.exe*
--rw-r--r-- 1 codemeow 197121 12783180 May 30 15:01 resources.pak
-drwxr-xr-x 1 codemeow 197121        0 May 30 15:01 swiftshader/
--rwxr-xr-x 1 codemeow 197121  1898496 May 30 15:01 tangramgpu.exe*
--rwxr-xr-x 1 codemeow 197121  1898496 May 30 15:01 tangramrenderer.exe*
--rwxr-xr-x 1 codemeow 197121  1898496 May 30 15:01 tangramutility.exe*
--rw-r--r-- 1 codemeow 197121   704192 May 30 15:01 v8_context_snapshot.bin
-drwxr-xr-x 1 codemeow 197121        0 May 30 15:01 VisualElements/
+C:\src\ChromeAppSDK
+λ ls -la
+total 27438
+drwxr-xr-x 1 codemeow 197121        0 Jun 14 16:27 ./
+drwxr-xr-x 1 codemeow 197121        0 Jun 14 16:27 ../
+drwxr-xr-x 1 codemeow 197121        0 Jun 14 16:27 74.0.3729.108/
+-rwxr-xr-x 1 codemeow 197121    89600 Jun 14 14:54 chromeapp.exe*
+-rw-r--r-- 1 codemeow 197121      184 Jun 14 14:54 chromeapp.exe.config
+-rw-r--r-- 1 codemeow 197121      108 Jun 14 14:54 chromeapp.exe.tangram
+-rw-r--r-- 1 codemeow 197121     6269 Jun 14 14:54 chromeapp.htm
+-rw-r--r-- 1 codemeow 197121    40033 Jun 14 14:54 chromeapp.zip
+-rw-r--r-- 1 codemeow 197121     6505 Jun 14 14:54 defaultntpdata.xml
+-rwxr-xr-x 1 codemeow 197121  1825280 Jun 14 14:54 tangramchromecore.dll*
+-rwxr-xr-x 1 codemeow 197121   568832 Jun 14 14:54 tangramclr.dll*
+-rwxr-xr-x 1 codemeow 197121  2866176 Jun 14 14:54 tangramcore.dll*
+-rwxr-xr-x 1 codemeow 197121   338432 Jun 14 14:54 tangraminit.dll*
+-rw-r--r-- 1 codemeow 197121 11759616 Jun 14 14:54 tangramsetupx64.msi
+-rw-r--r-- 1 codemeow 197121 10553344 Jun 14 14:54 tangramsetupx86.msi
 ```
+
+This package contains everything you need to develop based on Tangram. It contains a sample program **chromeapp.exe** and the corresponding source **chromeapp.zip**. Before starting development work, you need to install the appropriate installation package, **tangramsetupx64.msi** or **tangramsetupx86.msi**, depending on your application architecture.
+
+Double-click the sample **chromeapp.exe** to show 2 windows. Includes a .NET MDI Form window and a Chromium browser window.
+
+![1560501342147](C:\src\Tangram\Docs\assets\1560501342147.png)
+
+Tangram extends the original chromium browser, allowing you to build a hybrid interface using .NET and HTML. Click on the tree node on the left side of the browser to experience the features of Tangram.
+
+![1560501409857](C:\src\Tangram\Docs\assets\1560501409857.png)
+
+In addition, the hybrid interface can be applied not only to the viewport of the browser, but also to the general .NET Form. It should be noted that this extra MDI Form window is controlled and displayed via HTML.
+
+## Build from scratch
 
 Create a normal .NET Winform application `WindowsFormsApp1` and set build platform target to `x64`. Reference `TangramCLR.dll` from `C:\Windows\Microsoft.NET\assembly\GAC_64\TangramCLR\v4.0_1.0.1992.1963__1bcc94f26a4807a7\TangramCLR.dll`.
 
@@ -81,34 +75,43 @@ Add the following code to replace Winform's default message loop.
 /// The main entry point for the application.
 /// </summary>
 [STAThread]
-static void Main()
+static class Program
 {
-    Application.EnableVisualStyles();
-    Application.SetCompatibleTextRenderingDefault(false);
-    if (Tangram.CloudAppSupport)
-    {
-    	Tangram.OnGetTangramNtpXml += Tangram_OnGetTangramNtpXml;
-    	Tangram.InitCloudApp(false);
-	}
-	else
+	/// <summary>
+	/// The main entry point for the application.
+	/// </summary>
+	[STAThread]
+	static void Main()
 	{
-		Application.Run(new Form1());
+		Application.EnableVisualStyles();
+		Application.SetCompatibleTextRenderingDefault(false);
+		// Check if the dependent files is ready.
+		if (Tangram.CloudAppSupport)
+		{
+			// Use the message loop of Chromium to take over the application.
+			Tangram.InitCloudApp(false);
+		}
+		else
+		{
+			// Use the default message loop.
+			Application.Run(new Form1());
+		}
 	}
 }
 ```
 
 Build and into Output directory and usually the directory structure is as follows:
 
- ```
+```
 C:\Users\codemeow\source\repos\WindowsFormsApp1\bin\Debug
 λ ls -l
 total 37
 -rwxr-xr-x 1 codemeow 197121  7168 May 31 10:17 WindowsFormsApp1.exe*
 -rw-r--r-- 1 codemeow 197121   189 May 31 10:15 WindowsFormsApp1.exe.config
 -rw-r--r-- 1 codemeow 197121 26112 May 31 10:17 WindowsFormsApp1.pdb
- ```
+```
 
-You need to copy all the contents of the Tangram package to the same directory as the executable (currently WindowsFormsApp1.exe). The directory structure look similar to:
+You need to copy all the contents of the **ChromeAppSDK.zip** package to the same directory as the executable (currently WindowsFormsApp1.exe). The directory structure look similar to:
 
 ```
 C:\Users\codemeow\source\repos\WindowsFormsApp1\bin\Debug
@@ -125,10 +128,6 @@ drwxr-xr-x 1 codemeow 197121       0 May 31 10:25 74.0.3729.108/
 ```
 
 
-
-## Build from source
-
-TODO
 
 ## Discussion
 
