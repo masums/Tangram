@@ -56,11 +56,11 @@ This package contains everything you need to develop based on Tangram. It contai
 
 Double-click the sample **chromeapp.exe** to show 2 windows. Includes a .NET MDI Form window and a Chromium browser window.
 
-![1560501342147](C:\src\Tangram\Docs\assets\1560501342147.png)
+![1560501342147](Docs/assets/1560501342147.png)
 
 Tangram extends the original chromium browser, allowing you to build a hybrid interface using .NET and HTML. Click on the tree node on the left side of the browser to experience the features of Tangram.
 
-![1560501409857](C:\src\Tangram\Docs\assets\1560501409857.png)
+![1560501409857](Docs/assets/1560501409857.png)
 
 In addition, the hybrid interface can be applied not only to the viewport of the browser, but also to the general .NET Form. It should be noted that this extra MDI Form window is controlled and displayed via HTML.
 
